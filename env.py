@@ -1,6 +1,6 @@
 import random
 from models import Observation, Action, StepResult, StateResponse, GraderResult
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 DOCUMENTS = [
     {
