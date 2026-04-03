@@ -1,0 +1,6 @@
+name: SafeGuard-Env
+version: "1.0.0"
+description: "AI Data Compliance Officer Environment for testing PII redaction."
+environment_type: language
+entrypoint: "main:app"
+tags: ["openenv"]
