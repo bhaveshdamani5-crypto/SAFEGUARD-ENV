@@ -1,3 +1,13 @@
+---
+title: SafeGuard Env
+emoji: 🏢
+colorFrom: blue
+colorTo: pink
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # SafeGuard-Env
 
 ## Environment Description & Motivation
