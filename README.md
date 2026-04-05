@@ -8,6 +8,9 @@ pinned: false
 app_port: 7860
 ---
 
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white)](https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV)
+[![Hugging Face](https://img.shields.io/badge/Hugging_Face-Space-FF6E1F?logo=huggingface&logoColor=white)](https://huggingface.co/spaces/bhavesh657/SafeGuard-Env)
+
 # SafeGuard-Env
 
 An OpenEnv-compatible reinforcement learning environment for evaluating AI agents on information retrieval and data compliance tasks.

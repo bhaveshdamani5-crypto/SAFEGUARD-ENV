@@ -9,6 +9,7 @@ description = "OpenEnv Server for SafeGuard-Env"
 readme = "../README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
+urls = {"Source" = "https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV", "Hugging Face" = "https://huggingface.co/spaces/bhavesh657/SafeGuard-Env"}
 dependencies = [
     "fastapi>=0.100.0",
     "uvicorn>=0.23.0",
@@ -20,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 safeguard-env-server = "app:app"
+server = "app:main"
 
 [tool.setuptools.packages.find]
 where = [".."]

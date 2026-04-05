@@ -3,6 +3,9 @@ version: "2.5.0"
 description: "RL environment for information retrieval and data compliance tasks with procedural generation and cost-aware decision making."
 environment_type: language
 entrypoint: "server.app:app"
+repository:
+  github: "https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV"
+  huggingface: "https://huggingface.co/spaces/bhavesh657/SafeGuard-Env"
 tags:
   [
     "openenv",

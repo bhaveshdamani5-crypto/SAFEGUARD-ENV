@@ -9,6 +9,7 @@ description = "Zero-Knowledge Data Compliance Environment for evaluating AI agen
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
+urls = {"Source" = "https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV", "Hugging Face" = "https://huggingface.co/spaces/bhavesh657/SafeGuard-Env"}
 dependencies = [
     "fastapi>=0.100.0",
     "uvicorn>=0.23.0",

@@ -13,6 +13,18 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main import app  # noqa: F401 — re-export the FastAPI app
+import uvicorn
 
 # Standard OpenEnv convention: module-level `app` object
 __all__ = ["app"]
+
+def main() -> None:
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        log_level="info",
+    )
+
+if __name__ == "__main__":
+    main()
