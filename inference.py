@@ -32,6 +32,9 @@ def run_task_level(level: int):
             api_key=API_KEY,
             base_url=API_BASE_URL if API_BASE_URL else None
         )
+    elif level == 3:
+        print("  --> Skipping Level 3 (Procedural infinite mode is purely for live LLM agents with API Keys, not Mock Agents)")
+        return
 
     try:
         reset_res = requests.post(f"{ENV_URL}/reset", params={"level": level})
@@ -50,8 +53,9 @@ You have access to a Virtual Filesystem.
 Available tools:
 1. "list_directory": {{"path": "<string>"}} - Lists files/folders in a directory.
 2. "read_file": {{"path": "<string>"}} - Returns the content of a file.
-3. "redact_file": {{"path": "<string>", "secret": "<exact_string_to_hide>", "replacement": "***"}} - Replaces secret text in a file.
-4. "submit": {{}} - Complete the task.
+3. "search_filesystem": {{"query": "<string>"}} - Recursively searches all files for a string. Computes at a cost of -0.05 reward.
+4. "redact_file": {{"path": "<string>", "secret": "<exact_string_to_hide>", "replacement": "***"}} - Replaces secret text in a file.
+5. "submit": {{}} - Complete the task.
 
 At each step, you MUST respond strictly in this JSON format:
 {{
@@ -164,5 +168,5 @@ Do NOT output markdown (NO ```json). Output raw object.
         log_end(success=False, steps=steps_taken, score=0.0, rewards=rewards)
 
 if __name__ == "__main__":
-    for lvl in [1, 2]:
+    for lvl in [1, 2, 3]:
         run_task_level(lvl)

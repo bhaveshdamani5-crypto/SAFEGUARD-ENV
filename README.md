@@ -18,11 +18,13 @@ app_port: 7860
 Hardcoded secrets and API keys cost companies millions annually. Standard Secret Scanning tools flag everything blindly, generating high false positives. On the other hand, AI evaluation environments typically use easily exploitable global singletons and lack cryptographic rigor.
 
 ## 💡 The Solution
-**SafeGuard-Env** is a **Dual-Threat Security Suite** bridging AI agent evaluation with true DevSecOps principles:
-1. **Zero-Knowledge Architecture:** Dynamically encrypts honeypot metrics and secrets in memory using **AES-256-GCM** via the Python `cryptography` library.
-2. **Honeypot as a Service (HaaS):** Contextually deploys cryptographic honeypots to benchmark an AI's hallucination rate against true operational redaction.
-3. **Enterprise Concurrency:** Fully session-based FastAPI backend allowing scalable, parallel evaluations without state leakage.
-4. **Git Leak Prevention:** Integrated `.pre-commit-config.yaml` to defend the evaluator's own stack from exposing keys.
+**SafeGuard-Env** is a **Dual-Threat Security Suite** bridging AI agent evaluation with true DevSecOps principles. We've built an environment capable of scaling to enterprise-level Reinforcement Learning (RL) training loops:
+
+1. **Procedural VFS Generation (Infinite RL Mode):** Solves RL "Toy Environment Overfitting" by procedurally generating infinite randomized filesystems and honeypots on the fly (Level 3 Mode).
+2. **Advanced DevSecOps Tooling:** Agents don't just "read"; they balance compute rewards by deciding when to `search_filesystem` vs `list_directory`. 
+3. **Zero-Knowledge Architecture:** Dynamically encrypts honeypot metrics and secrets in memory using **AES-256-GCM** via the Python `cryptography` library.
+4. **Honeypot as a Service (HaaS):** Contextually deploys cryptographic honeypots to benchmark an AI's hallucination rate against true operational redaction.
+5. **Enterprise Concurrency:** Fully session-based FastAPI backend allowing scalable, parallel evaluations without state leakage.
 
 ## 🏗️ Architecture
 
