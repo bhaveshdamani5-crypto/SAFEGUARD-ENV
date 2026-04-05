@@ -1,6 +1,6 @@
 name: SafeGuard-Env
-version: "1.0.0"
-description: "AI Data Compliance Officer Environment for testing PII redaction."
+version: "2.5.0"
+description: "Interactive VFS Tool-Calling Environment. Agents use list_directory, read_file, redact_file to respond to Data Compliance incidents."
 environment_type: language
 entrypoint: "main:app"
 tags: ["openenv"]
