@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safeguard-env-server"
+version = "2.5.0"
+description = "OpenEnv Server for SafeGuard-Env"
+readme = "../README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "cryptography>=41.0.0",
+    "pydantic>=2.0.0",
+    "openenv-core>=0.2.0",
+    "requests>=2.25.0",
+]
+
+[project.scripts]
+safeguard-env-server = "app:app"
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["*"]
+exclude = ["__pycache__", "*.pyc", ".git", "client.py", "deploy_to_hf.py"]
