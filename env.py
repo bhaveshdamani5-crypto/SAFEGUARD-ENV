@@ -1,234 +1,240 @@
 import random
-from models import Observation, Action, StepResult, StateResponse, GraderResult
+import copy
 from typing import List, Dict, Any, Optional
+from models import Observation, Action, StepResult, StateResponse, GraderResult
+from security.crypto import global_vault
+import re
 
-DOCUMENTS = [
+SCENARIOS = [
     {
-        "id": "doc_1",
+        "id": "scenario_1",
         "level": 1,
-        "text": "Alert: Sysadmin sysadmin@domain.com from IP 192.168.0.50. Whitelisted mock IP is 127.0.0.1.",
-        "secrets": [
-            {"label": "EMAIL", "text": "sysadmin@domain.com"},
-            {"label": "IP", "text": "192.168.0.50"}
-        ],
-        "honeypots": [{"text": "127.0.0.1"}]
+        "task_description": "Incident Report: A developer may have committed a live API key into the repository. Investigate the filesystem, locate the live key, and redact it. IMPORTANT: Do not modify mock keys designed for the testing suite.",
+        "vfs": {
+            "/.env": "STRIPE_API_KEY=sk_live_51Mabcde12345\nDEBUG=True",
+            "/app/config.py": "MOCK_AWS_KEY='AKIA_MOCK_HZT45_9999'\ndef load_config(): pass",
+            "/src/main.py": "import os\nprint('starting')"
+        },
+        "true_secrets": [{"path": "/.env", "secret": "sk_live_51Mabcde12345"}],
+        "honeypots": [{"path": "/app/config.py", "secret": "AKIA_MOCK_HZT45_9999"}]
     },
     {
-        "id": "doc_2",
-        "level": 1,
-        "text": "Delete the record for support@test.org. Ignore system-generated example@test.org.",
-        "secrets": [
-            {"label": "EMAIL", "text": "support@test.org"}
-        ],
-        "honeypots": [{"text": "example@test.org"}]
-    },
-    {
-        "id": "doc_3",
-        "level": 1,
-        "text": "Connection blocked from 172.16.254.1. This is not the standard 8.8.8.8 dns server.",
-        "secrets": [
-            {"label": "IP", "text": "172.16.254.1"}
-        ],
-        "honeypots": [{"text": "8.8.8.8"}]
-    },
-    {
-        "id": "doc_4",
+        "id": "scenario_2",
         "level": 2,
-        "text": "Hey Jason, can you tell Sarah to check the budget? (P.S. Remember our persona 'John Doe' for the pitch).",
-        "secrets": [
-            {"label": "NAME", "text": "Jason"},
-            {"label": "NAME", "text": "Sarah"}
-        ],
-        "honeypots": [{"text": "John Doe"}]
-    },
-    {
-        "id": "doc_5",
-        "level": 2,
-        "text": "Customer Emily reported a bug. Dev team lead Peterson will review. Do not notify the test account 'Alice'.",
-        "secrets": [
-            {"label": "NAME", "text": "Emily"},
-            {"label": "NAME", "text": "Peterson"}
-        ],
-        "honeypots": [{"text": "Alice"}]
-    },
-    {
-        "id": "doc_6",
-        "level": 2,
-        "text": "Meeting notes: David is out sick. We will use the pseudonym 'Charlie' for the client.",
-        "secrets": [
-            {"label": "NAME", "text": "David"}
-        ],
-        "honeypots": [{"text": "Charlie"}]
-    },
-    {
-        "id": "doc_7",
-        "level": 3,
-        "text": "export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE; export DUMMY_KEY=AKIA_MOCK_KEY_12345; echo 'Deploying'",
-        "secrets": [
-            {"label": "API_KEY", "text": "AKIAIOSFODNN7EXAMPLE"}
-        ],
-        "honeypots": [{"text": "AKIA_MOCK_KEY_12345"}]
-    },
-    {
-        "id": "doc_8",
-        "level": 3,
-        "text": "curl -H 'Authorization: Bearer sk-live-12345ABCDEF67890' (fallback to sk-test-0000000000)",
-        "secrets": [
-            {"label": "AUTH_TOKEN", "text": "sk-live-12345ABCDEF67890"}
-        ],
-        "honeypots": [{"text": "sk-test-0000000000"}]
-    },
-    {
-        "id": "doc_9",
-        "level": 3,
-        "text": "const dbParams = { prod_pwd: 'superSecretPassword123!', demo_pwd: 'password' }; connect();",
-        "secrets": [
-            {"label": "PASSWORD", "text": "superSecretPassword123!"}
-        ],
-        "honeypots": [{"text": "password"}]
+        "task_description": "Incident Report: PII Leak suspected in log files. Find and redact the user email that leaked. Ignore test accounts used by automation systems.",
+        "vfs": {
+            "/logs/auth.log": "User logged in. IP: 192.168.1.1\nFailed login: realuser@gmail.com - bad password.",
+            "/tests/mocks.json": "{\"test_user\": \"automation@test.local\", \"id\": 1}",
+            "/app/handlers.py": "def login(user): log(user)"
+        },
+        "true_secrets": [{"path": "/logs/auth.log", "secret": "realuser@gmail.com"}],
+        "honeypots": [{"path": "/tests/mocks.json", "secret": "automation@test.local"}]
     }
 ]
 
-def init_documents():
-    for doc in DOCUMENTS:
-        for secret in doc["secrets"]:
-            idx = doc["text"].find(secret["text"])
-            if idx != -1:
-                secret["start_index"] = idx
-                secret["end_index"] = idx + len(secret["text"])
-            else:
-                raise ValueError(f"Secret {secret['text']} not found in {doc['id']}")
+def secure_init_database():
+    """Encrypts scenarios into the SecureVault to prevent static memory extraction of keys."""
+    encrypted_scenarios = []
+    for s in SCENARIOS:
+        enc_s = copy.deepcopy(s)
+        enc_s["vfs_encrypted"] = {}
+        for path, content in s["vfs"].items():
+            enc_s["vfs_encrypted"][path] = global_vault.encrypt_secret(content)
+        
+        # We don't encrypt the true_secrets/honeypots in this demo just for grading simplicity,
+        # but in a real platform they would be encrypted as well.
+        encrypted_scenarios.append(enc_s)
+    return encrypted_scenarios
 
-        for hp in doc.get("honeypots", []):
-            idx = doc["text"].find(hp["text"])
-            if idx != -1:
-                hp["start_index"] = idx
-                hp["end_index"] = idx + len(hp["text"])
-            else:
-                raise ValueError(f"Honeypot {hp['text']} not found in {doc['id']}")
-
-init_documents()
+ENCRYPTED_SCENARIOS = secure_init_database()
 
 class SafeGuardEnv:
-    def __init__(self):
-        self.doc: Optional[Dict[str, Any]] = None
-        self.found_secrets = []
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        self.scenario: Optional[Dict[str, Any]] = None
+        
+        # In-memory working file system (encrypted strings)
+        self.working_vfs: Dict[str, str] = {}
+        
+        self.found_secrets = 0
         self.hallucinations = 0
         self.honeypot_violations = 0
+        
+        # We record what string was replaced where
+        self.redaction_log = []
+        
         self.current_reward = 0.0
         self.is_done = False
-        self.redacted_ranges = []
 
     def reset(self, level: Optional[int] = None) -> Observation:
         if level is not None:
-            valid_docs = [d for d in DOCUMENTS if d["level"] == level]
-            if not valid_docs:
-                raise ValueError(f"No documents found for level {level}")
-            self.doc = random.choice(valid_docs)
+            valid = [s for s in ENCRYPTED_SCENARIOS if s["level"] == level]
+            if not valid:
+                raise ValueError(f"No scenarios for level {level}")
+            self.scenario = copy.deepcopy(random.choice(valid))
         else:
-            self.doc = random.choice(DOCUMENTS)
+            self.scenario = copy.deepcopy(random.choice(ENCRYPTED_SCENARIOS))
 
-        self.found_secrets = []
+        self.working_vfs = copy.deepcopy(self.scenario["vfs_encrypted"])
+        self.found_secrets = 0
         self.hallucinations = 0
         self.honeypot_violations = 0
+        self.redaction_log = []
         self.current_reward = 0.0
         self.is_done = False
-        self.redacted_ranges = []
         
         return Observation(
-            document_id=self.doc["id"],
-            text=self.doc["text"],
-            level=self.doc["level"]
+            session_id=self.session_id,
+            task_description=self.scenario["task_description"],
+            tool_output="Environment reset successfully. You are now in the root directory '/'. Use list_directory to explore.",
+            level=self.scenario["level"]
         )
 
     def step(self, action: Action) -> StepResult:
         if self.is_done:
             return StepResult(
-                observation=Observation(document_id=self.doc["id"], text=self.doc["text"], level=self.doc["level"]),
+                observation=Observation(session_id=self.session_id, task_description=self.scenario["task_description"], tool_output="Episode already done.", level=self.scenario["level"]),
                 reward=0.0,
                 done=True,
-                info={"reason": "Episode already done."}
+                info={"reason": "Already done."}
             )
 
-        extracted_text = self.doc["text"][action.start_index:action.end_index]
-        matched_secret = None
-        matched_honeypot = None
-        
-        for secret in self.doc["secrets"]:
-            if secret["start_index"] == action.start_index and secret["end_index"] == action.end_index and secret["label"] == action.label:
-                matched_secret = secret
-                break
-
-        for hp in self.doc.get("honeypots", []):
-            if hp["start_index"] == action.start_index and hp["end_index"] == action.end_index:
-                matched_honeypot = hp
-                break
-
+        tool = action.tool_name
+        args = action.arguments
+        tool_output = ""
         reward_value = 0.0
         info = ""
 
-        if matched_secret:
-            if matched_secret not in self.found_secrets:
-                self.found_secrets.append(matched_secret)
-                reward_value = 0.5
-                info = f"Correct redaction for {action.label}."
-                self.redacted_ranges.append((action.start_index, action.end_index))
+        try:
+            if tool == "list_directory":
+                path = args.get("path", "/")
+                # Ensure trailing slash for finding children
+                if not path.endswith("/"):
+                    path += "/"
+                if path == "//": 
+                    path = "/"
+
+                found_entries = set()
+                for vfs_path in self.working_vfs.keys():
+                    if vfs_path.startswith(path):
+                        remainder = vfs_path[len(path):]
+                        if not remainder:
+                            continue
+                        next_part = remainder.split("/")[0]
+                        if "/" in remainder:
+                            found_entries.add(next_part + "/") # It's a directory
+                        else:
+                            found_entries.add(next_part) # It's a file
+                
+                if found_entries:
+                    tool_output = f"Contents of {path}:\n" + "\n".join(sorted(list(found_entries)))
+                else:
+                    tool_output = f"Directory {path} is empty or does not exist."
+
+            elif tool == "read_file":
+                path = args.get("path", "")
+                if path in self.working_vfs:
+                    decrypted = global_vault.decrypt_secret(self.working_vfs[path])
+                    tool_output = f"--- BEGIN {path} ---\n{decrypted}\n--- END {path} ---"
+                else:
+                    tool_output = f"Error: File {path} not found."
+
+            elif tool == "redact_file":
+                path = args.get("path", "")
+                target_secret = args.get("secret", "")
+                replacement = args.get("replacement", "***")
+                
+                if path in self.working_vfs:
+                    decrypted = global_vault.decrypt_secret(self.working_vfs[path])
+                    if target_secret and target_secret in decrypted:
+                        new_content = decrypted.replace(target_secret, replacement)
+                        self.working_vfs[path] = global_vault.encrypt_secret(new_content)
+                        self.redaction_log.append({"path": path, "replaced": target_secret})
+                        tool_output = f"Success: Redacted '{target_secret}' with '{replacement}' in {path}."
+                        reward_value = 0.5
+                    else:
+                        tool_output = f"Error: Target text '{target_secret}' not found in {path}."
+                        reward_value = -0.1
+                else:
+                    tool_output = f"Error: File {path} not found."
+
+            elif tool == "submit":
+                self.is_done = True
+                
+                # Auto-Grade the episode for compliant RL Terminal state
+                final_grade = self.grade()
+                
+                # Since grade() already added to self.current_reward, we don't need to add it to reward_value
+                # But we do need to return the differential reward for *this specific step*
+                # grade() modified self.current_reward, the difference is the terminal reward.
+                # Actually, let's just let self.current_reward be accumulated, and we'll pass the breakdown in info.
+                
+                tool_output = f"Task submitted. Final Score: {final_grade.score:.2f} (Precision: {final_grade.precision:.2f}, Recall: {final_grade.recall:.2f})"
+                info = {"reason": "Submission initiated.", "grade": final_grade.dict()}
+            
             else:
-                info = "Already redacted."
-        elif matched_honeypot:
-            self.honeypot_violations += 1
-            reward_value = -1.0
-            info = f"FATAL: Redacted a decoy/honeypot context ('{extracted_text}'). Contextual violation."
-            self.redacted_ranges.append((action.start_index, action.end_index))
-        else:
-            self.hallucinations += 1
+                tool_output = f"Error: Unknown tool '{tool}'."
+                reward_value = -0.1
+
+        except Exception as e:
+            tool_output = f"Tool Execution Error: {str(e)}"
             reward_value = -0.5
-            info = f"Hallucinated redaction for {action.label}: '{extracted_text}'"
-            self.redacted_ranges.append((action.start_index, action.end_index))
 
         self.current_reward += reward_value
 
         return StepResult(
-            observation=Observation(document_id=self.doc["id"], text=self.doc["text"], level=self.doc["level"]),
+            observation=Observation(
+                session_id=self.session_id, 
+                task_description=self.scenario["task_description"], 
+                tool_output=tool_output, 
+                level=self.scenario["level"]
+            ),
             reward=reward_value,
-            done=False,
+            done=self.is_done,
             info={"reason": info}
         )
 
     def state(self) -> StateResponse:
-        if not self.doc:
-            return StateResponse(cleaned_text="", current_reward=0.0)
-            
-        cleaned = list(self.doc["text"])
-        for start_idx, end_idx in self.redacted_ranges:
-            cleaned[start_idx:end_idx] = list("*" * (end_idx - start_idx))
-            
+        state_dump = {}
+        if self.scenario:
+            for k, v in self.working_vfs.items():
+                state_dump[k] = global_vault.decrypt_secret(v)
+                
         return StateResponse(
-            cleaned_text="".join(cleaned),
+            cleaned_vfs_state=state_dump,
             current_reward=self.current_reward
         )
 
     def grade(self) -> GraderResult:
-        if self.is_done:
-            tp = len(self.found_secrets)
-            fp = self.hallucinations + self.honeypot_violations
-            fn = len(self.doc["secrets"]) - tp
-            precision = tp / (tp + fp) if (tp + fp) > 0 else 1.0 if tp > 0 else 0.0
-            recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-            f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
-            return GraderResult(precision=precision, recall=recall, score=f1, reward=self.current_reward)
-            
-        tp = len(self.found_secrets)
-        fp = self.hallucinations + self.honeypot_violations
-        fn = len(self.doc["secrets"]) - tp
-        
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 1.0 if tp > 0 else 0.0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        
-        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
-        
-        self.current_reward += fn * -1.0
         self.is_done = True
+        
+        tp = 0
+        fp = 0
+        
+        # Check true secrets
+        for req in self.scenario["true_secrets"]:
+            found = any((r["path"] == req["path"] and req["secret"] in r["replaced"]) for r in self.redaction_log)
+            if found:
+                tp += 1
+                self.current_reward += 1.0
+
+        # Check honeypots (False Positives)
+        for hp in self.scenario["honeypots"]:
+            violation = any((r["path"] == hp["path"] and hp["secret"] in r["replaced"]) for r in self.redaction_log)
+            if violation:
+                fp += 1
+                self.current_reward -= 2.0 # Heavy penalty for honeypot violation
+
+        # Any other redaction is a hallucination
+        total_redactions = len(self.redaction_log)
+        hallucinations = total_redactions - tp - fp
+        fp += max(0, hallucinations)
+        
+        fn = len(self.scenario["true_secrets"]) - tp
+        
+        precision = tp / (tp + fp) if (tp + fp) > 0 else (1.0 if tp > 0 else 0.0)
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
         
         return GraderResult(
             precision=precision,
@@ -236,5 +242,3 @@ class SafeGuardEnv:
             score=f1,
             reward=self.current_reward
         )
-
-env_instance = SafeGuardEnv()

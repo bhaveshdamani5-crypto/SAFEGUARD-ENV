@@ -1,0 +1,15 @@
+INFO:     127.0.0.1:52077 - "POST /reset?level=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52080 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52082 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52084 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52087 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52090 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52092 - "POST /grade?session_id=2a2d6185-287d-41e1-a471-dcad8ee4084b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52094 - "POST /reset?level=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52097 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52099 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52102 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52106 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52108 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52110 - "POST /step HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52112 - "POST /grade?session_id=b0edc3bd-7deb-4950-9de7-3b3056dc53e8 HTTP/1.1" 200 OK
