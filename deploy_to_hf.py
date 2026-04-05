@@ -38,6 +38,7 @@ def deploy():
             folder_path=".",
             repo_id=repo_id,
             repo_type="space",
+            delete_patterns="*",
             ignore_patterns=["__pycache__/*", ".git/*", "deploy_to_hf.py", ".venv/*", ".env"]
         )
         print(f"Deployment complete! 🎉 Your space will be available at: https://huggingface.co/spaces/{repo_id}")
