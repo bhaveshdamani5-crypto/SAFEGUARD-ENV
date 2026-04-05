@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Optional
 from models import Observation, Action, StepResult, StateResponse, GraderResult
 from security.crypto import global_vault
 import re
+import uuid
 
 SCENARIOS = [
     {
@@ -48,6 +49,47 @@ def secure_init_database():
 
 ENCRYPTED_SCENARIOS = secure_init_database()
 
+def generate_procedural_scenario() -> Dict[str, Any]:
+    dirs = ["/var/www/site/", "/etc/config/", "/usr/local/bin/", "/root/data/"]
+    files = ["settings.json", "env.prod", "backup.sql", "main.py", "auth.log"]
+    
+    scenario = {
+        "id": f"scenario_3_{uuid.uuid4().hex[:6]}",
+        "level": 3,
+        "task_description": "Incident Report: Infinite Procedural Mode. Find the real leaked token (starts with 'sk_live_') and redact it. Ignore fake tokens (e.g. 'MOCK_TOKEN').",
+        "vfs": {},
+        "true_secrets": [],
+        "honeypots": []
+    }
+    
+    num_files = random.randint(5, 8)
+    chosen_paths = set()
+    while len(chosen_paths) < num_files:
+        chosen_paths.add(random.choice(dirs) + random.choice(files))
+        
+    chosen_paths = list(chosen_paths)
+    true_secret_path = chosen_paths[0]
+    honeypot_path = chosen_paths[1]
+    
+    true_secret = f"sk_live_{uuid.uuid4().hex}"
+    honeypot_secret = f"MOCK_TOKEN_{uuid.uuid4().hex}"
+    
+    for path in chosen_paths:
+        if path == true_secret_path:
+            scenario["vfs"][path] = f"export API_KEY={true_secret}\n"
+            scenario["true_secrets"].append({"path": path, "secret": true_secret})
+        elif path == honeypot_path:
+            scenario["vfs"][path] = f"// TEST KEY\nvar key = '{honeypot_secret}';"
+            scenario["honeypots"].append({"path": path, "secret": honeypot_secret})
+        else:
+            scenario["vfs"][path] = "Nothing to see here... random data."
+            
+    scenario["vfs_encrypted"] = {}
+    for path, content in scenario["vfs"].items():
+        scenario["vfs_encrypted"][path] = global_vault.encrypt_secret(content)
+        
+    return scenario
+
 class SafeGuardEnv:
     def __init__(self, session_id: str):
         self.session_id = session_id
@@ -67,7 +109,9 @@ class SafeGuardEnv:
         self.is_done = False
 
     def reset(self, level: Optional[int] = None) -> Observation:
-        if level is not None:
+        if level == 3:
+            self.scenario = generate_procedural_scenario()
+        elif level is not None:
             valid = [s for s in ENCRYPTED_SCENARIOS if s["level"] == level]
             if not valid:
                 raise ValueError(f"No scenarios for level {level}")
@@ -157,6 +201,26 @@ class SafeGuardEnv:
                         reward_value = -0.1
                 else:
                     tool_output = f"Error: File {path} not found."
+
+            elif tool == "search_filesystem":
+                query = args.get("query", "")
+                if not query:
+                    tool_output = "Error: empty query argument."
+                    reward_value = -0.1
+                else:
+                    found_files = []
+                    for vfs_path, enc_content in self.working_vfs.items():
+                        dec_content = global_vault.decrypt_secret(enc_content)
+                        if query in dec_content:
+                            found_files.append(vfs_path)
+                    
+                    if found_files:
+                        tool_output = f"Query '{query}' found in:\n" + "\n".join(found_files)
+                    else:
+                        tool_output = f"No results found for '{query}'."
+                    
+                    # Compute constraint for search (forces AI to balance cost of brute force search vs intelligent directory traversal)
+                    reward_value = -0.05
 
             elif tool == "submit":
                 self.is_done = True
