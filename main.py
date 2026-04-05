@@ -26,38 +26,61 @@ def root_page():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeGuard-Env API</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>SafeGuard-Env | DevSecOps Evaluator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #0b0f19; --card-bg: rgba(255, 255, 255, 0.03); --card-border: rgba(255, 255, 255, 0.08); --text-primary: #f8fafc; --text-secondary: #94a3b8; --accent-glow: rgba(56, 189, 248, 0.4); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; position: relative; }
-        .orb { position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: -1; animation: float 15s ease-in-out infinite alternate; }
-        .orb-1 { top: -200px; left: -100px; background: radial-gradient(circle, rgba(56,189,248,0.3) 0%, rgba(11,15,25,0) 70%); }
-        .orb-2 { bottom: -200px; right: -100px; background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, rgba(11,15,25,0) 70%); animation-delay: -5s; }
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 30px) scale(1.1); } }
-        .glass-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 24px; padding: 4rem 3rem; max-width: 600px; width: 90%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transform: translateY(20px); opacity: 0; animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
-        .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #4ade80; padding: 6px 16px; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; margin-bottom: 2rem; letter-spacing: 0.5px; text-transform: uppercase; }
-        .pulse-dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-        h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 50%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
-        .accent { background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        p { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; font-weight: 300; }
-        .btn { display: inline-block; background: linear-gradient(135deg, #0ea5e9, #4f46e5); color: white; text-decoration: none; padding: 1rem 2.5rem; border-radius: 9999px; font-weight: 600; font-size: 1.125rem; transition: all 0.3s ease; box-shadow: 0 4px 15px var(--accent-glow); position: relative; overflow: hidden; }
-        .btn::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0)); opacity: 0; transition: opacity 0.3s ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); }
-        .btn:hover::after { opacity: 1; }
+        :root { --bg: #000000; --panel: #111111; --border: #333333; --text: #EDEDED; --muted: #A1A1AA; --accent: #3b82f6; --success: #22c55e; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); background-image: radial-gradient(#222 1px, transparent 1px); background-size: 24px 24px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 800px; padding: 2rem; }
+        h1 { font-size: 2.5rem; font-weight: 600; letter-spacing: -0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 12px; }
+        .status-dot { width: 12px; height: 12px; background: var(--success); border-radius: 50%; box-shadow: 0 0 12px var(--success); }
+        .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 3rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+        .card h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #fff; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        ul li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+        ul li::before { content: '→'; color: var(--border); }
+        .code-block { font-family: 'JetBrains Mono', monospace; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; color: #e5e7eb; margin-top: 1rem; }
+        .code-block .keyword { color: #c678dd; }
+        .code-block .string { color: #98c379; }
+        .actions { margin-top: 3rem; display: flex; gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-primary { background: #fff; color: #000; }
+        .btn-primary:hover { background: #e5e5e5; }
+        .btn-secondary { background: transparent; color: #fff; border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--panel); }
     </style>
 </head>
 <body>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="glass-card">
-        <div class="badge"><div class="pulse-dot"></div>System Online</div>
-        <h1>SafeGuard-<span class="accent">Env</span></h1>
-        <p>You have reached the headless OpenEnv API gateway. This architecture provides zero-knowledge cryptographic evaluation for DevSecOps AI agents under Reinforcement Learning topologies.</p>
-        <a href="/docs" class="btn">Launch API Matrix</a>
+    <div class="container">
+        <h1><div class="status-dot"></div> SafeGuard-Env</h1>
+        <p class="subtitle">Headless Enterprise Zero-Knowledge Environment for API Key Leak Evaluation via OpenEnv</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>Architecture Context</h3>
+                <ul>
+                    <li>AES-256-GCM Secure In-Memory States</li>
+                    <li>Procedural VFS Auto-Generation (Level 3)</li>
+                    <li>Markovian Compute Cost Agent Mechanics</li>
+                    <li>Honeypot Decoy Verification Systems</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>API Endpoints</h3>
+                <div class="code-block">
+                    <div><span class="keyword">POST</span> <span class="string">/reset</span> : Init Simulation</div>
+                    <div style="margin-top: 0.5rem;"><span class="keyword">POST</span> <span class="string">/step</span>  : Execute Agent Action</div>
+                    <div style="margin-top: 0.5rem;"><span class="keyword">POST</span> <span class="string">/grade</span> : Terminal State Reward</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/docs" class="btn btn-primary">Open Swagger UI</a>
+            <a href="https://github.com/mainti5-crypto/SAFEGUARD-ENV" class="btn btn-secondary" target="_blank">View Repository</a>
+        </div>
     </div>
 </body>
 </html>"""
