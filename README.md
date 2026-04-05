@@ -1,3 +1,13 @@
+---
+title: SafeGuard Env
+emoji: 🛡️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # 🛡️ SafeGuard-Env (OpenEnv DevSecOps Edition)
 
 ![SafeGuard Header](https://via.placeholder.com/1000x200.png?text=SafeGuard-Env:+Zero-Knowledge+Data+Compliance)
