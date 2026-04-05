@@ -99,293 +99,176 @@ body { background: #0a0a0f !important; color: #e0e0e8 !important; font-family: '
 REDOC_DARK_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-:root {{
-  --redoc-background: #0a0a0f;
-  --redoc-surface: #0e0e16;
-  --redoc-surface-secondary: #12121a;
-  --redoc-text-primary: #e0e0e8;
-  --redoc-text-secondary: #a0a0b8;
-  --redoc-text-muted: #8b8b9e;
-  --redoc-primary: #6366f1;
-  --redoc-success: #10b981;
-  --redoc-warning: #f59e0b;
-  --redoc-error: #ef4444;
-  --redoc-cyan: #06b6d4;
-  --redoc-pink: #ec4899;
-}}
-
-* {{
-  box-sizing: border-box;
-}}
-
-body {{
-  background: var(--redoc-background) !important;
-  color: var(--redoc-text-primary) !important;
+body {
+  background: #0a0a0f !important;
+  color: #e0e0e8 !important;
   margin: 0;
   font-family: 'Inter', sans-serif !important;
-  line-height: 1.6;
-}}
+}
 
-/* Main container */
-.redoc-wrap {{
-  background: var(--redoc-background) !important;
-}}
+.redoc-wrap {
+  background: #0a0a0f !important;
+}
 
-/* Sidebar */
-.menu-content {{
-  background: var(--redoc-surface) !important;
+.menu-content {
+  background: #0e0e16 !important;
   border-right: 1px solid rgba(255,255,255,0.06) !important;
-}}
+}
 
-.menu-content label.active {{
+.menu-content label.active {
   background: rgba(99,102,241,0.12) !important;
-}}
+}
 
-.menu-content ul li.active {{
-  border-left-color: var(--redoc-primary) !important;
-}}
+.menu-content ul li.active {
+  border-left-color: #6366f1 !important;
+}
 
-.menu-content label span {{
-  color: var(--redoc-text-primary) !important;
-}}
+.menu-content label span {
+  color: #e0e0e8 !important;
+}
 
-.menu-content label {{
-  color: var(--redoc-text-muted) !important;
-}}
+.menu-content label {
+  color: #8b8b9e !important;
+}
 
-.menu-content label:hover {{
+.menu-content label:hover {
   background: rgba(255,255,255,0.04) !important;
-}}
+}
 
-/* Links */
-a[href] {{
-  color: var(--redoc-primary) !important;
-}}
+a[href] {
+  color: #6366f1 !important;
+}
 
-a[href]:hover {{
-  color: #8b5cf6 !important;
-}}
-
-/* Headings */
-h1, h2, h3, h4, h5 {{
+h1, h2, h3, h4, h5 {
   color: #f0f0f5 !important;
   font-family: 'Inter', sans-serif !important;
-  font-weight: 600 !important;
-  line-height: 1.3 !important;
-}}
+}
 
-h1 {{
+h1 {
   font-size: 2rem !important;
   font-weight: 700 !important;
-  margin-bottom: 1rem !important;
-}}
+}
 
-h2 {{
-  font-size: 1.5rem !important;
-  margin-top: 2rem !important;
-  margin-bottom: 1rem !important;
-}}
+p, li, td, span {
+  color: #a0a0b8 !important;
+}
 
-h3 {{
-  font-size: 1.25rem !important;
-  margin-top: 1.5rem !important;
-  margin-bottom: 0.75rem !important;
-}}
-
-/* Text content */
-p, li, td, span {{
-  color: var(--redoc-text-secondary) !important;
-}}
-
-/* Code blocks */
-code {{
+code {
   background: #1e1e2e !important;
-  color: var(--redoc-cyan) !important;
+  color: #06b6d4 !important;
   border-radius: 4px !important;
   font-family: 'JetBrains Mono', monospace !important;
-  padding: 2px 6px !important;
-  font-size: 0.875em !important;
-}}
+}
 
-pre {{
-  background: var(--redoc-surface) !important;
+pre {
+  background: #0e0e16 !important;
   border-radius: 8px !important;
   border: 1px solid rgba(255,255,255,0.06) !important;
-  padding: 1rem !important;
-  overflow-x: auto;
-}}
+}
 
-pre code {{
-  background: transparent !important;
-  color: var(--redoc-text-primary) !important;
-  padding: 0 !important;
-}}
+pre code {
+  color: #e0e0e8 !important;
+}
 
-/* Tables */
-table {{
-  border-collapse: collapse !important;
-  width: 100% !important;
-  margin: 1rem 0 !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-}}
+table {
+  border-color: rgba(255,255,255,0.06) !important;
+}
 
-table th {{
-  background: var(--redoc-surface-secondary) !important;
-  color: var(--redoc-text-primary) !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
+table th {
+  background: #12121a !important;
+  color: #e0e0e8 !important;
+  border-color: rgba(255,255,255,0.06) !important;
   font-weight: 600 !important;
-  padding: 0.75rem !important;
-  text-align: left !important;
-}}
+}
 
-table td {{
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  color: var(--redoc-text-secondary) !important;
-  padding: 0.75rem !important;
-}}
+table td {
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #a0a0b8 !important;
+}
 
-table tr:nth-child(even) {{
-  background: rgba(255,255,255,0.02) !important;
-}}
+.api-content {
+  background: #0a0a0f !important;
+}
 
-/* API content area */
-.api-content {{
-  background: var(--redoc-background) !important;
-  color: var(--redoc-text-primary) !important;
-}}
-
-/* HTTP method badges */
-.http-verb {{
+.http-verb {
   border-radius: 6px !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   padding: 4px 10px !important;
+}
+
+.http-verb.get {
+  background: #10b981 !important;
   color: white !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-}}
+}
 
-.http-verb.get {{
-  background: var(--redoc-success) !important;
-}}
+.http-verb.post {
+  background: #6366f1 !important;
+  color: white !important;
+}
 
-.http-verb.post {{
-  background: var(--redoc-primary) !important;
-}}
+.http-verb.put {
+  background: #f59e0b !important;
+  color: white !important;
+}
 
-.http-verb.put {{
-  background: var(--redoc-warning) !important;
-}}
+.http-verb.delete {
+  background: #ef4444 !important;
+  color: white !important;
+}
 
-.http-verb.delete {{
-  background: var(--redoc-error) !important;
-}}
+.react-tabs__tab-panel {
+  background: #0e0e16 !important;
+}
 
-.http-verb.patch {{
-  background: var(--redoc-pink) !important;
-}}
-
-/* Request/response sections */
-.api-info {{
-  background: var(--redoc-surface) !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  border-radius: 8px !important;
-  padding: 1.5rem !important;
-  margin: 1rem 0 !important;
-}}
-
-/* Tabs */
-.react-tabs__tab-panel {{
-  background: var(--redoc-surface) !important;
-}}
-
-.react-tabs__tab {{
-  color: var(--redoc-text-muted) !important;
+.react-tabs__tab {
+  color: #8b8b9e !important;
   background: transparent !important;
-  border: none !important;
-  padding: 0.75rem 1rem !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}}
+}
 
-.react-tabs__tab:hover {{
-  color: var(--redoc-text-primary) !important;
-  background: rgba(255,255,255,0.04) !important;
-}}
+.react-tabs__tab--selected {
+  color: #f0f0f5 !important;
+  border-bottom-color: #6366f1 !important;
+}
 
-.react-tabs__tab--selected {{
-  color: var(--redoc-text-primary) !important;
-  border-bottom: 2px solid var(--redoc-primary) !important;
-  background: rgba(99,102,241,0.1) !important;
-}}
+.token.property {
+  color: #06b6d4 !important;
+}
 
-.react-tabs__tab-list {{
-  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
-  margin-bottom: 1rem !important;
-}}
+.token.string {
+  color: #10b981 !important;
+}
 
-/* Code syntax highlighting */
-.token.property {{
-  color: var(--redoc-cyan) !important;
-}}
+.token.number {
+  color: #f59e0b !important;
+}
 
-.token.string {{
-  color: var(--redoc-success) !important;
-}}
+.token.boolean {
+  color: #ec4899 !important;
+}
 
-.token.number {{
-  color: var(--redoc-warning) !important;
-}}
-
-.token.boolean {{
-  color: var(--redoc-pink) !important;
-}}
-
-.token.punctuation {{
-  color: var(--redoc-text-muted) !important;
-}}
-
-/* Tab panels */
 [role='tabpanel'] > div,
-[role='tabpanel'] pre {{
-  background: var(--redoc-surface) !important;
-}}
+[role='tabpanel'] pre {
+  background: #0e0e16 !important;
+}
 
-/* Scrollbars */
-::-webkit-scrollbar {{
+::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-}}
+}
 
-::-webkit-scrollbar-track {{
-  background: var(--redoc-background);
-}}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
 
-::-webkit-scrollbar-thumb {{
+::-webkit-scrollbar-thumb {
   background: #2a2a3e;
   border-radius: 4px;
-}}
+}
 
-::-webkit-scrollbar-thumb:hover {{
+::-webkit-scrollbar-thumb:hover {
   background: #3a3a4e;
-}}
-
-/* Loading states */
-.loading {{
-  color: var(--redoc-primary) !important;
-}}
-
-/* Error states */
-.error {{
-  color: var(--redoc-error) !important;
-}}
-
-/* Success states */
-.success {{
-  color: var(--redoc-success) !important;
-}}
+}
 """
 
 @app.get("/docs", include_in_schema=False)
@@ -422,61 +305,21 @@ async def custom_redoc():
 <style>{REDOC_DARK_CSS}</style>
 </head><body>
 <div id="redoc-container"></div>
-<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+<script src="https://cdn.redoc.ly/redoc/v2.0.0-rc.75/bundles/redoc.standalone.js"></script>
 <script>
 Redoc.init('{app.openapi_url}', {{
   theme: {{
     colors: {{
       primary: {{
         main: '#6366f1'
-      }},
-      text: {{
-        primary: '#e0e0e8',
-        secondary: '#a0a0b8'
-      }},
-      http: {{
-        get: '#10b981',
-        post: '#6366f1',
-        put: '#f59e0b',
-        delete: '#ef4444'
-      }},
-      responses: {{
-        success: {{
-          color: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)'
-        }},
-        error: {{
-          color: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)'
-        }}
       }}
     }},
     typography: {{
-      fontFamily: 'Inter, sans-serif',
-      headings: {{
-        fontFamily: 'Inter, sans-serif'
-      }},
-      code: {{
-        fontFamily: 'JetBrains Mono, monospace'
-      }}
-    }},
-    sidebar: {{
-      backgroundColor: '#0e0e16',
-      textColor: '#a0a0b8',
-      activeTextColor: '#f0f0f5',
-      activeBgColor: 'rgba(99, 102, 241, 0.1)'
-    }},
-    rightPanel: {{
-      backgroundColor: '#12121a',
-      textColor: '#a0a0b8'
-    }},
-    codeBlock: {{
-      backgroundColor: '#0e0e16'
+      fontFamily: 'Inter, sans-serif'
     }}
   }},
   hideDownloadButton: false,
-  expandResponses: '200,201',
-  scrollYOffset: 0
+  expandResponses: '200,201'
 }}, document.getElementById('redoc-container'));
 </script>
 </body></html>""")
