@@ -14,10 +14,12 @@ dependencies = [
     "uvicorn>=0.23.0",
     "cryptography>=41.0.0",
     "pydantic>=2.0.0",
+    "openenv-core>=0.2.0",
+    "requests>=2.25.0",
 ]
 
 [project.scripts]
-safeguard-env = "main:app"
+safeguard-env = "server.app:app"
 
 [tool.setuptools.packages.find]
 where = ["."]

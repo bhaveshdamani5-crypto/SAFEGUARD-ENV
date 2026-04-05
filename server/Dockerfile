@@ -14,13 +14,12 @@ ENV HOME=/home/user \
 WORKDIR $HOME/app
 
 # Copy requirements and install them securely
-COPY --chown=user requirements.txt .
-COPY --chown=user pyproject.toml .
+COPY --chown=user ../requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Copy the rest of the application
-COPY --chown=user . $HOME/app
+COPY --chown=user .. $HOME/app
 
 EXPOSE 7860
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
