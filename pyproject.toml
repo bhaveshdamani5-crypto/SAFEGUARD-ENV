@@ -21,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 safeguard-env = "server.app:app"
+server = "server.app:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
