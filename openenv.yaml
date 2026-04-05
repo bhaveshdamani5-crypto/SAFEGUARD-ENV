@@ -2,5 +2,5 @@ name: SafeGuard-Env
 version: "2.5.0"
 description: "Interactive VFS Tool-Calling Environment. Agents use list_directory, read_file, redact_file to respond to Data Compliance incidents."
 environment_type: language
-entrypoint: "main:app"
+entrypoint: "server.app:app"
 tags: ["openenv"]

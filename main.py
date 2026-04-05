@@ -67,6 +67,29 @@ body { background: #0a0a0f !important; color: #e0e0e8 !important; font-family: '
 .swagger-ui .renderedMarkdown p { color: #a0a0b8 !important; }
 .swagger-ui .response-control-media-type__accept-message { color: #10b981 !important; }
 .swagger-ui .loading-container .loading::after { color: #6366f1 !important; }
+.swagger-ui .tab { background: #12121a !important; color: #8b8b9e !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+.swagger-ui .tab--active { background: #0e0e16 !important; color: #f0f0f5 !important; border-color: #6366f1 !important; }
+.swagger-ui .tab-content { background: #0e0e16 !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+.swagger-ui .try-out { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 8px !important; }
+.swagger-ui .try-out__btn { background: #6366f1 !important; color: #fff !important; border-radius: 6px !important; }
+.swagger-ui .try-out__btn:hover { background: #5558e6 !important; }
+.swagger-ui .execute-wrapper { background: #0e0e16 !important; padding: 16px !important; border-radius: 8px !important; }
+.swagger-ui .responses-inner { background: #0e0e16 !important; }
+.swagger-ui .response { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 8px !important; }
+.swagger-ui .response .response-col_status { color: #10b981 !important; }
+.swagger-ui .response .response-col_description { color: #8b8b9e !important; }
+.swagger-ui .live-responses-table { background: #0e0e16 !important; }
+.swagger-ui .live-responses-table tr { border-bottom: 1px solid rgba(255,255,255,0.04) !important; }
+.swagger-ui .live-responses-table td { color: #e0e0e8 !important; }
+.swagger-ui .curl-command { background: #0a0a0f !important; color: #e0e0e8 !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+.swagger-ui .download-contents { background: #1e1e2e !important; color: #e0e0e8 !important; }
+.swagger-ui .servers { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 8px !important; }
+.swagger-ui .servers .servers-title { color: #f0f0f5 !important; }
+.swagger-ui .servers select { background: #1e1e2e !important; color: #e0e0e8 !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+.swagger-ui .auth-wrapper { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 8px !important; }
+.swagger-ui .auth-container { background: #0e0e16 !important; }
+.swagger-ui .authorize { background: #6366f1 !important; color: #fff !important; border-radius: 6px !important; }
+.swagger-ui .authorize:hover { background: #5558e6 !important; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #0a0a0f; }
 ::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 4px; }
@@ -148,10 +171,21 @@ async def custom_redoc():
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>{REDOC_DARK_CSS}</style>
 </head><body>
-<redoc spec-url='{app.openapi_url}' 
-    theme='{{"colors":{{"primary":{{"main":"#6366f1"}}}},"typography":{{"fontFamily":"Inter, sans-serif","headings":{{"fontFamily":"Inter, sans-serif"}},"code":{{"fontFamily":"JetBrains Mono, monospace"}}}},"sidebar":{{"backgroundColor":"#0e0e16","textColor":"#8b8b9e","activeTextColor":"#f0f0f5"}},"rightPanel":{{"backgroundColor":"#12121a"}}}}'
-></redoc>
-<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+<div id="redoc-container"></div>
+<script src="https://cdn.redoc.ly/redoc/v2.0.0-rc.75/bundles/redoc.standalone.js"></script>
+<script>
+Redoc.init('{app.openapi_url}', {{
+  hideDownloadButton: false,
+  expandResponses: '200,201',
+  theme: {{
+    colors: {{
+      primary: {{
+        main: '#6366f1'
+      }}
+    }}
+  }}
+}}, document.getElementById('redoc-container'));
+</script>
 </body></html>""")
 
 # Concurrency Management: Store unique environment states per session
