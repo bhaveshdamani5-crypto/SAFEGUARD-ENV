@@ -1,10 +1,42 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.middleware.cors import CORSMiddleware
 from models import Observation, Action, StepResult, StateResponse, GraderResult
 from env import SafeGuardEnv
 import uuid
 from typing import Optional, Dict
+import time
+import threading
+
+# Session management with automatic cleanup
+sessions: Dict[str, SafeGuardEnv] = {}
+session_timestamps: Dict[str, float] = {}
+SESSION_TIMEOUT = 3600  # 1 hour in seconds
+
+def cleanup_expired_sessions():
+    """Clean up sessions that have been inactive for more than SESSION_TIMEOUT seconds"""
+    current_time = time.time()
+    expired_sessions = [
+        sid for sid, timestamp in session_timestamps.items()
+        if current_time - timestamp > SESSION_TIMEOUT
+    ]
+    for sid in expired_sessions:
+        if sid in sessions:
+            del sessions[sid]
+        del session_timestamps[sid]
+
+# Start cleanup thread
+def start_cleanup_thread():
+    def cleanup_loop():
+        while True:
+            time.sleep(300)  # Clean up every 5 minutes
+            cleanup_expired_sessions()
+    
+    thread = threading.Thread(target=cleanup_loop, daemon=True)
+    thread.start()
+
+start_cleanup_thread()
 
 app = FastAPI(
     title="SafeGuard-Env (DevSecOps Edition)", 
@@ -12,6 +44,15 @@ app = FastAPI(
     version="2.0.0",
     docs_url=None,
     redoc_url=None
+)
+
+# Add CORS middleware for Hugging Face Spaces
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for Hugging Face Spaces
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 SWAGGER_DARK_CSS = """
@@ -1246,6 +1287,63 @@ def root_page():
             .demo-controls { flex-direction: column; align-items: stretch; }
             .control-group { width: 100%; }
             .demo-select { min-width: auto; }
+            .demo-output { min-height: 250px; }
+            .demo-placeholder { height: 250px; }
+            .demo-loading { height: 250px; }
+        }
+
+        /* ACCESSIBILITY IMPROVEMENTS */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .btn:focus, .demo-select:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* LOADING STATES */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ERROR STATES */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: var(--danger);
+        }
+
+        /* SUCCESS STATES */
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: var(--success);
         }
     </style>
 </head>
@@ -1551,28 +1649,31 @@ def root_page():
             <h2>Interactive Demo</h2>
             <p>Test the environment with pre-configured agent behaviors. Perfect for judges to quickly evaluate functionality.</p>
         </div>
-        <div class="demo-container">
-            <div class="demo-controls">
+        <div class="demo-container" role="region" aria-labelledby="demo-heading">
+            <div class="demo-controls" role="toolbar" aria-label="Demo controls">
                 <div class="control-group">
-                    <label for="demo-level">Difficulty Level:</label>
-                    <select id="demo-level" class="demo-select">
+                    <label for="demo-level" id="level-label">Difficulty Level:</label>
+                    <select id="demo-level" class="demo-select" aria-labelledby="level-label" aria-describedby="level-description">
                         <option value="1">Level 1: Static Scenarios</option>
                         <option value="2">Level 2: Context-Aware</option>
                         <option value="3">Level 3: Procedural Generation</option>
                     </select>
+                    <div id="level-description" class="sr-only">Choose the difficulty level for the evaluation</div>
                 </div>
                 <div class="control-group">
-                    <label for="demo-agent">Agent Strategy:</label>
-                    <select id="demo-agent" class="demo-select">
+                    <label for="demo-agent" id="agent-label">Agent Strategy:</label>
+                    <select id="demo-agent" class="demo-select" aria-labelledby="agent-label" aria-describedby="agent-description">
                         <option value="optimal">Optimal Agent (Perfect Performance)</option>
                         <option value="baseline">Baseline Agent (Typical Performance)</option>
                         <option value="random">Random Agent (Chance Performance)</option>
                     </select>
+                    <div id="agent-description" class="sr-only">Select the type of agent to run the evaluation</div>
                 </div>
-                <button id="run-demo" class="btn btn-primary">
-                    <span id="run-icon">▶️</span>
+                <button id="run-demo" class="btn btn-primary" aria-describedby="run-description">
+                    <span id="run-icon" aria-hidden="true">▶️</span>
                     Run Evaluation
                 </button>
+                <div id="run-description" class="sr-only">Start the interactive evaluation with the selected parameters</div>
             </div>
             <div id="demo-output" class="demo-output">
                 <div class="demo-placeholder">
@@ -1733,8 +1834,18 @@ def root_page():
                 await this.showFinalResults();
 
             } catch (error) {
-                console.error('Demo error:', error);
-                this.showError('Demo failed: ' + error.message + '. Please check the console for details.');
+                console.error('Demo evaluation error:', error);
+                let errorMessage = 'An unexpected error occurred during evaluation.';
+
+                if (error.message.includes('fetch')) {
+                    errorMessage = 'Network error: Unable to connect to the evaluation server. Please check your internet connection.';
+                } else if (error.message.includes('Session not found')) {
+                    errorMessage = 'Session error: Please try running the evaluation again.';
+                } else if (error.message.includes('500')) {
+                    errorMessage = 'Server error: The evaluation service is temporarily unavailable. Please try again later.';
+                }
+
+                this.showError(errorMessage);
             } finally {
                 this.isRunning = false;
                 this.runButton.disabled = false;
@@ -1784,17 +1895,25 @@ def root_page():
         async resetEnvironment(level) {
             this.addResultLine('00:00', 'RESET', `Initializing Level ${level} environment...`, 'info');
 
-            const response = await fetch(`${this.baseUrl}/reset`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ level: level })
-            });
+            try {
+                const response = await fetch(`${this.baseUrl}/reset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ level: level })
+                });
 
-            if (!response.ok) throw new Error('Failed to reset environment');
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(`HTTP ${response.status}: ${errorData.detail}`);
+                }
 
-            const data = await response.json();
-            this.sessionId = data.session_id;
-            this.addResultLine('00:01', 'READY', `Session ${this.sessionId.substring(0, 8)} ready`, 'success');
+                const data = await response.json();
+                this.sessionId = data.session_id;
+                this.addResultLine('00:01', 'READY', `Session ${this.sessionId.substring(0, 8)} ready`, 'success');
+            } catch (error) {
+                this.addResultLine('00:01', 'ERROR', `Failed to initialize environment: ${error.message}`, 'error');
+                throw error;
+            }
         }
 
         async runAgentEvaluation(agentType) {
@@ -1880,54 +1999,75 @@ def root_page():
             const timestamp = new Date().toLocaleTimeString();
             this.addResultLine(timestamp, toolName.toUpperCase(), `Executing with args: ${JSON.stringify(args)}`, 'info');
 
-            const response = await fetch(`${this.baseUrl}/step`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    session_id: this.sessionId,
-                    tool_name: toolName,
-                    arguments: args
-                })
-            });
+            try {
+                const response = await fetch(`${this.baseUrl}/step`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: this.sessionId,
+                        tool_name: toolName,
+                        arguments: args
+                    })
+                });
 
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(`${toolName} failed: ${error}`);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(`HTTP ${response.status}: ${errorData.detail}`);
+                }
+
+                const result = await response.json();
+                const reward = result.reward.toFixed(2);
+                this.addResultLine(timestamp, 'RESULT', `Reward: ${reward}`, result.reward > 0 ? 'success' : 'info');
+
+                return result;
+            } catch (error) {
+                this.addResultLine(timestamp, 'ERROR', `Action failed: ${error.message}`, 'error');
+                throw error;
             }
-
-            const result = await response.json();
-            const reward = result.reward.toFixed(2);
-            this.addResultLine(timestamp, 'RESULT', `Reward: ${reward}`, result.reward > 0 ? 'success' : 'info');
-
-            return result;
         }
 
         async showFinalResults() {
             const timestamp = new Date().toLocaleTimeString();
             this.addResultLine(timestamp, 'GRADING', 'Computing final evaluation metrics...', 'info');
 
-            const response = await fetch(`${this.baseUrl}/grade`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: this.sessionId })
-            });
+            try {
+                const response = await fetch(`${this.baseUrl}/grade`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: this.sessionId })
+                });
 
-            if (!response.ok) throw new Error('Failed to get final grade');
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(`HTTP ${response.status}: ${errorData.detail}`);
+                }
 
-            const grade = await response.json();
-
-            this.addResultLine(timestamp, 'FINAL', `Precision: ${grade.precision.toFixed(2)}, Recall: ${grade.recall.toFixed(2)}, F1: ${grade.score.toFixed(2)}`, 'success');
+                const grade = await response.json();
+                this.addResultLine(timestamp, 'FINAL', `Precision: ${grade.precision.toFixed(2)}, Recall: ${grade.recall.toFixed(2)}, F1: ${grade.score.toFixed(2)}`, 'success');
+            } catch (error) {
+                this.addResultLine(timestamp, 'ERROR', `Grading failed: ${error.message}`, 'error');
+                throw error;
+            }
         }
     }
 
     // Initialize demo when page loads
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('Initializing InteractiveDemo...');
         try {
             new InteractiveDemo();
-            console.log('InteractiveDemo initialized successfully');
         } catch (error) {
             console.error('Failed to initialize InteractiveDemo:', error);
+            // Show user-friendly error message
+            const demoSection = document.querySelector('.demo-container');
+            if (demoSection) {
+                demoSection.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⚠️</div>
+                        <h3>Demo Unavailable</h3>
+                        <p>The interactive demo is currently unavailable. Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
         }
     });
 </script>
@@ -1937,27 +2077,79 @@ def root_page():
 
 @app.post("/reset", response_model=Observation)
 def reset_env(level: Optional[int] = None, session_id: Optional[str] = None):
-    # Support backward compatibility by using default session mapping if clients omit session_id
-    sid = session_id if session_id else str(uuid.uuid4())
-    sessions[sid] = SafeGuardEnv(session_id=sid)
-    return sessions[sid].reset(level)
+    try:
+        # Validate level parameter
+        if level is not None and (level < 1 or level > 3):
+            raise HTTPException(status_code=400, detail="Level must be between 1 and 3")
+
+        # Support backward compatibility by using default session mapping if clients omit session_id
+        sid = session_id if session_id else str(uuid.uuid4())
+
+        # Clean up old session if it exists
+        if sid in sessions:
+            del sessions[sid]
+
+        sessions[sid] = SafeGuardEnv(session_id=sid)
+        session_timestamps[sid] = time.time()
+        return sessions[sid].reset(level)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Environment reset failed: {str(e)}")
+
+@app.delete("/session/{session_id}")
+def cleanup_session(session_id: str):
+    """Clean up a specific session"""
+    if session_id in sessions:
+        del sessions[session_id]
+        return {"message": f"Session {session_id} cleaned up"}
+    else:
+        raise HTTPException(status_code=404, detail="Session not found")
 
 @app.post("/step", response_model=StepResult)
 def step_env(action: Action, session_id: Optional[str] = None):
-    # Action object now contains session_id, fallback to query param or default
-    sid = action.session_id if action.session_id != "default" else (session_id if session_id else "default")
-    env = get_env(sid)
-    return env.step(action)
+    try:
+        # Action object now contains session_id, fallback to query param or default
+        sid = action.session_id if action.session_id != "default" else (session_id if session_id else "default")
+
+        # Validate session exists
+        if sid not in sessions:
+            raise HTTPException(status_code=404, detail="Session not found. Please reset the environment first.")
+
+        env = get_env(sid)
+        session_timestamps[sid] = time.time()  # Update session timestamp
+        return env.step(action)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Step execution failed: {str(e)}")
 
 @app.get("/state", response_model=StateResponse)
 def state_env(session_id: str = "default"):
-    env = get_env(session_id)
-    return env.state()
+    try:
+        # Validate session exists
+        if session_id not in sessions:
+            raise HTTPException(status_code=404, detail="Session not found. Please reset the environment first.")
 
-@app.post("/grade", response_model=GraderResult)
-def grade_env(session_id: str = "default"):
-    env = get_env(session_id)
-    return env.grade()
+        env = get_env(session_id)
+        return env.state()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"State retrieval failed: {str(e)}")
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "active_sessions": len(sessions),
+        "uptime": "running"
+    }
+
+@app.get("/favicon.ico")
+def favicon():
+    """Favicon endpoint to prevent 404 errors"""
+    return {"message": "No favicon available"}
 
 if __name__ == "__main__":
     import uvicorn
