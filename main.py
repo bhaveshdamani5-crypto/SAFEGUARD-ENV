@@ -1694,8 +1694,8 @@ def root_page():
         // Fix the View Repository button
         const repoBtn = document.getElementById('view-repo-btn');
         if (repoBtn) {
-            repoUrl = repoUrl.replace('bhavesh657', 'bhavya1600');
-            repoBtn.href = repoUrl;
+            // Use the correct GitHub repository URL
+            repoBtn.href = 'https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV';
             repoBtn.target = '_blank';
         }
     })();
@@ -1703,6 +1703,8 @@ def root_page():
     // Interactive Demo Functionality
     class InteractiveDemo {
         constructor() {
+            // Get the correct base URL for API calls
+            this.baseUrl = window.location.origin;
             this.sessionId = null;
             this.isRunning = false;
             this.outputElement = document.getElementById('demo-output');
@@ -1731,7 +1733,8 @@ def root_page():
                 await this.showFinalResults();
 
             } catch (error) {
-                this.showError('Evaluation failed: ' + error.message);
+                console.error('Demo error:', error);
+                this.showError('Demo failed: ' + error.message + '. Please check the console for details.');
             } finally {
                 this.isRunning = false;
                 this.runButton.disabled = false;
@@ -1781,7 +1784,7 @@ def root_page():
         async resetEnvironment(level) {
             this.addResultLine('00:00', 'RESET', `Initializing Level ${level} environment...`, 'info');
 
-            const response = await fetch('/reset', {
+            const response = await fetch(`${this.baseUrl}/reset`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ level: level })
@@ -1877,7 +1880,7 @@ def root_page():
             const timestamp = new Date().toLocaleTimeString();
             this.addResultLine(timestamp, toolName.toUpperCase(), `Executing with args: ${JSON.stringify(args)}`, 'info');
 
-            const response = await fetch('/step', {
+            const response = await fetch(`${this.baseUrl}/step`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1903,7 +1906,7 @@ def root_page():
             const timestamp = new Date().toLocaleTimeString();
             this.addResultLine(timestamp, 'GRADING', 'Computing final evaluation metrics...', 'info');
 
-            const response = await fetch('/grade', {
+            const response = await fetch(`${this.baseUrl}/grade`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: this.sessionId })
@@ -1919,7 +1922,13 @@ def root_page():
 
     // Initialize demo when page loads
     document.addEventListener('DOMContentLoaded', () => {
-        new InteractiveDemo();
+        console.log('Initializing InteractiveDemo...');
+        try {
+            new InteractiveDemo();
+            console.log('InteractiveDemo initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize InteractiveDemo:', error);
+        }
     });
 </script>
 
