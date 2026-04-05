@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.env
+uvicorn_err.txt
+uvicorn_out.txt
