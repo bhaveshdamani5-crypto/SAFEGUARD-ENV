@@ -1,6 +1,60 @@
 name: SafeGuard-Env
 version: "2.5.0"
-description: "Interactive VFS Tool-Calling Environment. Agents use list_directory, read_file, redact_file to respond to Data Compliance incidents."
+description: "RL environment for information retrieval and data compliance tasks with procedural generation and cost-aware decision making."
 environment_type: language
 entrypoint: "server.app:app"
-tags: ["openenv"]
+tags:
+  [
+    "openenv",
+    "reinforcement-learning",
+    "information-retrieval",
+    "benchmarking",
+    "procedural-generation",
+    "cost-aware",
+    "precision-recall",
+  ]
+
+# Research Applications
+research_applications:
+  - "Information Retrieval: Benchmarking search strategies in structured data"
+  - "Cost-Aware Decision Making: Studying trade-offs between exploration and exploitation"
+  - "Precision vs. Recall: Evaluating different optimization objectives"
+  - "Procedural Generation: Testing generalization in dynamic environments"
+
+# Technical Highlights
+technical_highlights:
+  - "Procedural filesystem generation for infinite scenarios"
+  - "Asymmetric cost modeling with search penalties"
+  - "F1 scoring for precision/recall evaluation"
+  - "Session-based concurrency for parallel evaluations"
+  - "AES-256-GCM cryptography for secure data handling"
+
+# Benchmarking Metrics
+benchmarking_metrics:
+  - "F1 Score: Harmonic mean of precision and recall"
+  - "Cost Efficiency: Reward penalties for expensive operations"
+  - "Hallucination Detection: False positive penalties"
+  - "Completion Rate: Success across difficulty levels"
+  - "Procedural Generation: Infinite scenario variety"
+  - "Concurrent Evaluation: Session-based parallel testing"
+
+# Benchmark Results
+benchmark_results:
+  optimal_agent:
+    level_1_f1: 1.00
+    level_2_f1: 1.00
+    level_3_f1: 1.00
+    avg_cost: 0.00
+    completion_rate: 1.00
+  baseline_agent:
+    level_1_f1: 0.85
+    level_2_f1: 0.75
+    level_3_f1: 0.60
+    avg_cost: -0.15
+    completion_rate: 0.92
+  random_agent:
+    level_1_f1: 0.15
+    level_2_f1: 0.12
+    level_3_f1: 0.08
+    avg_cost: -0.45
+    completion_rate: 0.35

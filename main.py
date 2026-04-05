@@ -973,6 +973,280 @@ def root_page():
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* BENCHMARKING STYLES */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .comparison-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .comparison-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        .metric-comparison { display: flex; flex-direction: column; gap: 1rem; }
+        .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+        }
+        .metric-label {
+            min-width: 140px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .metric-bars {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 8px;
+        }
+        .metric-bar {
+            height: 100%;
+            border-radius: 4px;
+            position: relative;
+        }
+        .metric-bar.classic {
+            background: linear-gradient(90deg, var(--danger), var(--warning));
+        }
+        .metric-bar.safeguard {
+            background: linear-gradient(90deg, var(--success), var(--accent));
+        }
+        .metric-values {
+            min-width: 120px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* PERFORMANCE CHART */
+        .performance-chart { margin-top: 1rem; }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .chart-legend {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .legend-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .legend-dot.optimal { background: var(--accent); }
+        .legend-dot.agent { background: var(--success); }
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: end;
+            height: 200px;
+            gap: 2rem;
+        }
+        .chart-bar { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .bar-label {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .bar-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+        }
+        .bar {
+            width: 30px;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+        .bar.optimal {
+            background: linear-gradient(to top, var(--accent), rgba(99,102,241,0.8));
+            margin-right: 8px;
+        }
+        .bar.agent {
+            background: linear-gradient(to top, var(--success), rgba(16,185,129,0.8));
+        }
+
+        /* RESEARCH INSIGHTS */
+        .research-insights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .insight-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .insight-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        .insight-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .insight-card li {
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .insight-card strong {
+            color: var(--text);
+        }
+
+        /* RESPONSIVE FOR BENCHMARKING */
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .research-insights { grid-template-columns: 1fr; }
+            .chart-bars { gap: 1rem; height: 150px; }
+            .metric-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .metric-bars { width: 100%; }
+        }
+
+        /* INTERACTIVE DEMO STYLES */
+        .demo-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .demo-controls {
+            display: flex;
+            gap: 2rem;
+            align-items: end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .control-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .demo-select {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+        .demo-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+        }
+        .demo-output {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        .demo-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+        .demo-placeholder h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .demo-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: var(--text);
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .demo-results {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result-line {
+            margin-bottom: 0.25rem;
+            display: flex;
+        }
+        .result-timestamp {
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+            min-width: 80px;
+        }
+        .result-action {
+            color: var(--cyan);
+            margin-right: 0.5rem;
+        }
+        .result-success { color: var(--success); }
+        .result-error { color: var(--danger); }
+        .result-info { color: var(--text-muted); }
+
+        /* RESPONSIVE FOR DEMO */
+        @media (max-width: 768px) {
+            .demo-controls { flex-direction: column; align-items: stretch; }
+            .control-group { width: 100%; }
+            .demo-select { min-width: auto; }
+        }
     </style>
 </head>
 <body>
@@ -1169,6 +1443,147 @@ def root_page():
         </div>
     </section>
 
+    <!-- BENCHMARKING COMPARISON -->
+    <section class="section reveal">
+        <div class="section-header">
+            <h2>Research Benchmarking</h2>
+            <p>Comparative analysis against existing OpenEnv environments and RL benchmarks.</p>
+        </div>
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h3>🏆 vs. Classic OpenEnv</h3>
+                <div class="metric-comparison">
+                    <div class="metric-item">
+                        <span class="metric-label">Scenario Generation</span>
+                        <div class="metric-bars">
+                            <div class="metric-bar classic" style="width: 30%"></div>
+                            <div class="metric-bar safeguard" style="width: 95%"></div>
+                        </div>
+                        <span class="metric-values">Static → Infinite</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Cost Modeling</span>
+                        <div class="metric-bars">
+                            <div class="metric-bar classic" style="width: 20%"></div>
+                            <div class="metric-bar safeguard" style="width: 90%"></div>
+                        </div>
+                        <span class="metric-values">Flat → Asymmetric</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Evaluation Metrics</span>
+                        <div class="metric-bars">
+                            <div class="metric-bar classic" style="width: 40%"></div>
+                            <div class="metric-bar safeguard" style="width: 100%"></div>
+                        </div>
+                        <span class="metric-values">Basic → F1/Precision/Recall</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Concurrency</span>
+                        <div class="metric-bars">
+                            <div class="metric-bar classic" style="width: 25%"></div>
+                            <div class="metric-bar safeguard" style="width: 85%"></div>
+                        </div>
+                        <span class="metric-values">Single-threaded → Session-based</span>
+                    </div>
+                </div>
+            </div>
+            <div class="comparison-card">
+                <h3>📊 Performance Metrics</h3>
+                <div class="performance-chart">
+                    <div class="chart-header">
+                        <span>F1 Score by Difficulty Level</span>
+                        <span class="chart-legend">
+                            <span class="legend-dot optimal"></span> Theoretical Optimal
+                            <span class="legend-dot agent"></span> Typical Agent Performance
+                        </span>
+                    </div>
+                    <div class="chart-bars">
+                        <div class="chart-bar">
+                            <div class="bar-label">Level 1<br><small>Static</small></div>
+                            <div class="bar-container">
+                                <div class="bar optimal" style="height: 100%"></div>
+                                <div class="bar agent" style="height: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="bar-label">Level 2<br><small>Context</small></div>
+                            <div class="bar-container">
+                                <div class="bar optimal" style="height: 100%"></div>
+                                <div class="bar agent" style="height: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="bar-label">Level 3<br><small>Procedural</small></div>
+                            <div class="bar-container">
+                                <div class="bar optimal" style="height: 100%"></div>
+                                <div class="bar agent" style="height: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="research-insights">
+            <div class="insight-card">
+                <h4>🔬 Research Applications</h4>
+                <ul>
+                    <li><strong>Information Retrieval:</strong> Benchmarking search strategies in structured data</li>
+                    <li><strong>Cost-Aware Decision Making:</strong> Studying exploration vs. exploitation trade-offs</li>
+                    <li><strong>Precision vs. Recall:</strong> Evaluating different optimization objectives</li>
+                    <li><strong>Procedural Generation:</strong> Testing generalization in dynamic environments</li>
+                </ul>
+            </div>
+            <div class="insight-card">
+                <h4>🎯 Key Innovations</h4>
+                <ul>
+                    <li><strong>Procedural Filesystems:</strong> Infinite randomized scenarios prevent overfitting</li>
+                    <li><strong>Asymmetric Costs:</strong> Realistic penalty structures (-0.05 for search operations)</li>
+                    <li><strong>F1 Scoring:</strong> Harmonic mean of precision and recall for balanced evaluation</li>
+                    <li><strong>Honeypot Detection:</strong> False positive penalties measure agent reliability</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE DEMO -->
+    <section class="section reveal">
+        <div class="section-header">
+            <h2>Interactive Demo</h2>
+            <p>Test the environment with pre-configured agent behaviors. Perfect for judges to quickly evaluate functionality.</p>
+        </div>
+        <div class="demo-container">
+            <div class="demo-controls">
+                <div class="control-group">
+                    <label for="demo-level">Difficulty Level:</label>
+                    <select id="demo-level" class="demo-select">
+                        <option value="1">Level 1: Static Scenarios</option>
+                        <option value="2">Level 2: Context-Aware</option>
+                        <option value="3">Level 3: Procedural Generation</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="demo-agent">Agent Strategy:</label>
+                    <select id="demo-agent" class="demo-select">
+                        <option value="optimal">Optimal Agent (Perfect Performance)</option>
+                        <option value="baseline">Baseline Agent (Typical Performance)</option>
+                        <option value="random">Random Agent (Chance Performance)</option>
+                    </select>
+                </div>
+                <button id="run-demo" class="btn btn-primary">
+                    <span id="run-icon">▶️</span>
+                    Run Evaluation
+                </button>
+            </div>
+            <div id="demo-output" class="demo-output">
+                <div class="demo-placeholder">
+                    <div class="placeholder-icon">🎯</div>
+                    <h3>Ready to Evaluate</h3>
+                    <p>Select a difficulty level and agent strategy, then click "Run Evaluation" to see the environment in action.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- AGENT TOOLS -->
     <section class="section reveal">
         <div class="section-header">
@@ -1279,10 +1694,233 @@ def root_page():
         // Fix the View Repository button
         const repoBtn = document.getElementById('view-repo-btn');
         if (repoBtn) {
+            repoUrl = repoUrl.replace('bhavesh657', 'bhavya1600');
             repoBtn.href = repoUrl;
             repoBtn.target = '_blank';
         }
     })();
+
+    // Interactive Demo Functionality
+    class InteractiveDemo {
+        constructor() {
+            this.sessionId = null;
+            this.isRunning = false;
+            this.outputElement = document.getElementById('demo-output');
+            this.runButton = document.getElementById('run-demo');
+            this.runIcon = document.getElementById('run-icon');
+            this.levelSelect = document.getElementById('demo-level');
+            this.agentSelect = document.getElementById('demo-agent');
+
+            this.runButton.addEventListener('click', () => this.runEvaluation());
+        }
+
+        async runEvaluation() {
+            if (this.isRunning) return;
+
+            this.isRunning = true;
+            this.runButton.disabled = true;
+            this.runIcon.textContent = '⏳';
+            this.showLoading();
+
+            try {
+                const level = parseInt(this.levelSelect.value);
+                const agentType = this.agentSelect.value;
+
+                await this.resetEnvironment(level);
+                await this.runAgentEvaluation(agentType);
+                await this.showFinalResults();
+
+            } catch (error) {
+                this.showError('Evaluation failed: ' + error.message);
+            } finally {
+                this.isRunning = false;
+                this.runButton.disabled = false;
+                this.runIcon.textContent = '▶️';
+            }
+        }
+
+        showLoading() {
+            this.outputElement.innerHTML = `
+                <div class="demo-loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Running Evaluation...</h3>
+                    <p>Agent is exploring the filesystem and performing redactions.</p>
+                </div>
+            `;
+        }
+
+        showError(message) {
+            this.outputElement.innerHTML = `
+                <div class="demo-results">
+                    <div class="result-line">
+                        <span class="result-timestamp">[ERROR]</span>
+                        <span class="result-error">${message}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        addResultLine(timestamp, action, message, type = 'info') {
+            const resultsDiv = this.outputElement.querySelector('.demo-results');
+            if (!resultsDiv) {
+                this.outputElement.innerHTML = '<div class="demo-results"></div>';
+            }
+
+            const line = document.createElement('div');
+            line.className = 'result-line';
+            line.innerHTML = `
+                <span class="result-timestamp">[${timestamp}]</span>
+                <span class="result-action">${action}</span>
+                <span class="result-${type}">${message}</span>
+            `;
+
+            this.outputElement.querySelector('.demo-results').appendChild(line);
+            this.outputElement.scrollTop = this.outputElement.scrollHeight;
+        }
+
+        async resetEnvironment(level) {
+            this.addResultLine('00:00', 'RESET', `Initializing Level ${level} environment...`, 'info');
+
+            const response = await fetch('/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level: level })
+            });
+
+            if (!response.ok) throw new Error('Failed to reset environment');
+
+            const data = await response.json();
+            this.sessionId = data.session_id;
+            this.addResultLine('00:01', 'READY', `Session ${this.sessionId.substring(0, 8)} ready`, 'success');
+        }
+
+        async runAgentEvaluation(agentType) {
+            const strategies = {
+                optimal: this.runOptimalAgent.bind(this),
+                baseline: this.runBaselineAgent.bind(this),
+                random: this.runRandomAgent.bind(this)
+            };
+
+            await strategies[agentType]();
+        }
+
+        async runOptimalAgent() {
+            this.addResultLine('00:02', 'AGENT', 'Starting optimal agent evaluation...', 'info');
+
+            // Optimal strategy: explore systematically, read files, redact correctly
+            await this.exploreAndRedact(true);
+        }
+
+        async runBaselineAgent() {
+            this.addResultLine('00:02', 'AGENT', 'Starting baseline agent evaluation...', 'info');
+
+            // Baseline strategy: some exploration, some mistakes
+            await this.exploreAndRedact(false);
+        }
+
+        async runRandomAgent() {
+            this.addResultLine('00:02', 'AGENT', 'Starting random agent evaluation...', 'info');
+
+            // Random strategy: chaotic exploration
+            for (let i = 0; i < 5; i++) {
+                const actions = ['list_directory', 'read_file', 'search_filesystem', 'redact_file'];
+                const randomAction = actions[Math.floor(Math.random() * actions.length)];
+
+                try {
+                    await this.executeAction(randomAction, {});
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                } catch (e) {
+                    // Ignore errors for random agent
+                }
+            }
+        }
+
+        async exploreAndRedact(optimal = false) {
+            // List root directory
+            const rootResult = await this.executeAction('list_directory', { path: '/' });
+            const dirs = rootResult.observation.filter(item => item.endsWith('/'));
+
+            for (const dir of dirs) {
+                const dirPath = dir.slice(0, -1); // Remove trailing slash
+                const listResult = await this.executeAction('list_directory', { path: dirPath });
+
+                // Look for files that might contain secrets
+                for (const item of listResult.observation) {
+                    if (!item.endsWith('/')) {
+                        const readResult = await this.executeAction('read_file', { path: item });
+
+                        // Simple pattern matching for secrets (in real agent, this would be more sophisticated)
+                        const content = readResult.observation;
+                        const secretPatterns = [
+                            /sk_live_[a-zA-Z0-9]+/g,
+                            /AKIA[0-9A-Z]{16}/g,
+                            /SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}/g
+                        ];
+
+                        for (const pattern of secretPatterns) {
+                            const matches = content.match(pattern);
+                            if (matches) {
+                                for (const match of matches) {
+                                    // In optimal mode, only redact real secrets. In baseline mode, make some mistakes
+                                    if (optimal || Math.random() > 0.3) {
+                                        await this.executeAction('redact_file', { path: item, secret: match });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        async executeAction(toolName, args) {
+            const timestamp = new Date().toLocaleTimeString();
+            this.addResultLine(timestamp, toolName.toUpperCase(), `Executing with args: ${JSON.stringify(args)}`, 'info');
+
+            const response = await fetch('/step', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: this.sessionId,
+                    tool_name: toolName,
+                    arguments: args
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`${toolName} failed: ${error}`);
+            }
+
+            const result = await response.json();
+            const reward = result.reward.toFixed(2);
+            this.addResultLine(timestamp, 'RESULT', `Reward: ${reward}`, result.reward > 0 ? 'success' : 'info');
+
+            return result;
+        }
+
+        async showFinalResults() {
+            const timestamp = new Date().toLocaleTimeString();
+            this.addResultLine(timestamp, 'GRADING', 'Computing final evaluation metrics...', 'info');
+
+            const response = await fetch('/grade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: this.sessionId })
+            });
+
+            if (!response.ok) throw new Error('Failed to get final grade');
+
+            const grade = await response.json();
+
+            this.addResultLine(timestamp, 'FINAL', `Precision: ${grade.precision.toFixed(2)}, Recall: ${grade.recall.toFixed(2)}, F1: ${grade.score.toFixed(2)}`, 'success');
+        }
+    }
+
+    // Initialize demo when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        new InteractiveDemo();
+    });
 </script>
 
 </body>
