@@ -78,8 +78,8 @@ def root_page():
         </div>
 
         <div class="actions">
-            <a href="/docs" class="btn btn-primary">Open Swagger UI</a>
-            <a href="https://github.com/mainti5-crypto/SAFEGUARD-ENV" class="btn btn-secondary" target="_blank">View Repository</a>
+            <a href="/redoc" class="btn btn-primary" target="_top">View API Specifications</a>
+            <a href="https://github.com/mainti5-crypto/SAFEGUARD-ENV" class="btn btn-secondary" target="_top">View Source Code</a>
         </div>
     </div>
 </body>
