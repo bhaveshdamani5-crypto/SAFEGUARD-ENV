@@ -99,24 +99,34 @@ body { background: #0a0a0f !important; color: #e0e0e8 !important; font-family: '
 REDOC_DARK_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-body {
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   background: #0a0a0f !important;
   color: #e0e0e8 !important;
   margin: 0;
+  padding: 0;
   font-family: 'Inter', sans-serif !important;
+  line-height: 1.6;
+  height: 100%;
 }
 
 .redoc-wrap {
   background: #0a0a0f !important;
+  color: #e0e0e8 !important;
 }
 
 .menu-content {
   background: #0e0e16 !important;
   border-right: 1px solid rgba(255,255,255,0.06) !important;
+  color: #e0e0e8 !important;
 }
 
 .menu-content label.active {
   background: rgba(99,102,241,0.12) !important;
+  color: #f0f0f5 !important;
 }
 
 .menu-content ul li.active {
@@ -133,23 +143,42 @@ body {
 
 .menu-content label:hover {
   background: rgba(255,255,255,0.04) !important;
+  color: #f0f0f5 !important;
 }
 
 a[href] {
   color: #6366f1 !important;
 }
 
-h1, h2, h3, h4, h5 {
+a[href]:hover {
+  color: #8b5cf6 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
   color: #f0f0f5 !important;
   font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin: 1rem 0 0.5rem 0 !important;
 }
 
 h1 {
   font-size: 2rem !important;
   font-weight: 700 !important;
+  margin-bottom: 1rem !important;
 }
 
-p, li, td, span {
+h2 {
+  font-size: 1.5rem !important;
+  margin: 2rem 0 1rem 0 !important;
+}
+
+h3 {
+  font-size: 1.25rem !important;
+  margin: 1.5rem 0 0.75rem 0 !important;
+}
+
+p, li, td, span, div {
   color: #a0a0b8 !important;
 }
 
@@ -158,36 +187,67 @@ code {
   color: #06b6d4 !important;
   border-radius: 4px !important;
   font-family: 'JetBrains Mono', monospace !important;
+  padding: 2px 6px !important;
+  font-size: 0.875em !important;
 }
 
 pre {
   background: #0e0e16 !important;
   border-radius: 8px !important;
   border: 1px solid rgba(255,255,255,0.06) !important;
-}
-
-pre code {
+  padding: 1rem !important;
+  overflow-x: auto;
   color: #e0e0e8 !important;
 }
 
+pre code {
+  background: transparent !important;
+  color: #e0e0e8 !important;
+  padding: 0 !important;
+}
+
 table {
-  border-color: rgba(255,255,255,0.06) !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+  margin: 1rem 0 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: #0e0e16 !important;
 }
 
 table th {
   background: #12121a !important;
   color: #e0e0e8 !important;
-  border-color: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
   font-weight: 600 !important;
+  padding: 0.75rem !important;
+  text-align: left !important;
 }
 
 table td {
-  border-color: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
   color: #a0a0b8 !important;
+  padding: 0.75rem !important;
+  background: #0a0a0f !important;
+}
+
+table tr:nth-child(even) td {
+  background: #0e0e16 !important;
 }
 
 .api-content {
   background: #0a0a0f !important;
+  color: #e0e0e8 !important;
+}
+
+.api-info {
+  background: #0e0e16 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+  padding: 1.5rem !important;
+  margin: 1rem 0 !important;
+  color: #e0e0e8 !important;
 }
 
 .http-verb {
@@ -195,40 +255,67 @@ table td {
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   padding: 4px 10px !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  display: inline-block !important;
+  margin-right: 0.5rem !important;
 }
 
 .http-verb.get {
   background: #10b981 !important;
-  color: white !important;
 }
 
 .http-verb.post {
   background: #6366f1 !important;
-  color: white !important;
 }
 
 .http-verb.put {
   background: #f59e0b !important;
-  color: white !important;
 }
 
 .http-verb.delete {
   background: #ef4444 !important;
-  color: white !important;
+}
+
+.http-verb.patch {
+  background: #ec4899 !important;
 }
 
 .react-tabs__tab-panel {
   background: #0e0e16 !important;
+  color: #e0e0e8 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
 }
 
 .react-tabs__tab {
   color: #8b8b9e !important;
   background: transparent !important;
+  border: none !important;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-tabs__tab:hover {
+  color: #f0f0f5 !important;
+  background: rgba(255,255,255,0.04) !important;
 }
 
 .react-tabs__tab--selected {
   color: #f0f0f5 !important;
-  border-bottom-color: #6366f1 !important;
+  border-bottom: 2px solid #6366f1 !important;
+  background: rgba(99,102,241,0.1) !important;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  margin-bottom: 1rem !important;
+  background: #12121a !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 0 !important;
 }
 
 .token.property {
@@ -247,11 +334,127 @@ table td {
   color: #ec4899 !important;
 }
 
+.token.punctuation {
+  color: #8b8b9e !important;
+}
+
 [role='tabpanel'] > div,
 [role='tabpanel'] pre {
   background: #0e0e16 !important;
+  color: #e0e0e8 !important;
 }
 
+/* Request/Response sections */
+.request, .response {
+  background: #0e0e16 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  color: #e0e0e8 !important;
+}
+
+/* Schema sections */
+.schema {
+  background: #12121a !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  color: #e0e0e8 !important;
+}
+
+/* Property rows */
+.property {
+  background: #0e0e16 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem !important;
+  margin: 0.5rem 0 !important;
+  color: #e0e0e8 !important;
+}
+
+/* Required field indicators */
+.required {
+  color: #ef4444 !important;
+  font-weight: 600 !important;
+}
+
+/* Type indicators */
+.type {
+  color: #06b6d4 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Description text */
+.description {
+  color: #a0a0b8 !important;
+  font-style: italic !important;
+}
+
+/* Example sections */
+.example {
+  background: #1e1e2e !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem !important;
+  margin: 0.5rem 0 !important;
+  color: #e0e0e8 !important;
+}
+
+/* Loading states */
+.loading {
+  color: #6366f1 !important;
+}
+
+/* Error states */
+.error {
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem !important;
+}
+
+/* Success states */
+.success {
+  color: #10b981 !important;
+}
+
+/* Buttons */
+button {
+  background: #6366f1 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 1rem !important;
+  cursor: pointer !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  transition: background 0.2s ease !important;
+}
+
+button:hover {
+  background: #5558e6 !important;
+}
+
+/* Input fields */
+input, textarea, select {
+  background: #1e1e2e !important;
+  color: #e0e0e8 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 6px !important;
+  padding: 0.5rem !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -268,6 +471,20 @@ table td {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #3a3a4e;
+}
+
+/* Additional coverage for any remaining white elements */
+* {
+  background-color: transparent !important;
+}
+
+div, section, article, aside, header, footer, nav, main {
+  background-color: transparent !important;
+}
+
+.redoc-json {
+  background: #0e0e16 !important;
+  color: #e0e0e8 !important;
 }
 """
 
