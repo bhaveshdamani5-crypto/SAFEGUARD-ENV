@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from models import Observation, Action, StepResult, StateResponse, GraderResult
 from env import SafeGuardEnv
 import uuid
@@ -8,8 +9,150 @@ from typing import Optional, Dict
 app = FastAPI(
     title="SafeGuard-Env (DevSecOps Edition)", 
     description="Zero-Knowledge Data Compliance Environment for evaluating API Key & PII redaction capabilities.", 
-    version="2.0.0"
+    version="2.0.0",
+    docs_url=None,
+    redoc_url=None
 )
+
+SWAGGER_DARK_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+html { background: #0a0a0f !important; }
+body { background: #0a0a0f !important; color: #e0e0e8 !important; font-family: 'Inter', sans-serif !important; }
+.swagger-ui { background: #0a0a0f !important; font-family: 'Inter', sans-serif !important; }
+.swagger-ui .topbar { background: linear-gradient(135deg, #12121a 0%, #1a1a2e 100%) !important; border-bottom: 1px solid rgba(99,102,241,0.15) !important; padding: 12px 0 !important; }
+.swagger-ui .topbar .download-url-wrapper input { background: #1e1e2e !important; color: #e0e0e8 !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 8px !important; }
+.swagger-ui .topbar a span { color: #fff !important; font-weight: 600 !important; }
+.swagger-ui .info { margin: 40px 0 !important; }
+.swagger-ui .info .title { color: #f0f0f5 !important; font-weight: 700 !important; font-size: 2rem !important; }
+.swagger-ui .info .description p { color: #8b8b9e !important; }
+.swagger-ui .info .base-url { color: #6366f1 !important; }
+.swagger-ui .scheme-container { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 12px !important; box-shadow: none !important; padding: 16px !important; }
+.swagger-ui .opblock-tag { color: #f0f0f5 !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; font-weight: 600 !important; }
+.swagger-ui .opblock { background: #12121a !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 12px !important; margin-bottom: 12px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.2) !important; }
+.swagger-ui .opblock .opblock-summary { border-radius: 12px !important; padding: 12px 16px !important; }
+.swagger-ui .opblock.opblock-post { border-color: rgba(99,102,241,0.3) !important; background: rgba(99,102,241,0.04) !important; }
+.swagger-ui .opblock.opblock-post .opblock-summary-method { background: #6366f1 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 8px 16px !important; }
+.swagger-ui .opblock.opblock-get { border-color: rgba(16,185,129,0.3) !important; background: rgba(16,185,129,0.04) !important; }
+.swagger-ui .opblock.opblock-get .opblock-summary-method { background: #10b981 !important; border-radius: 8px !important; font-weight: 600 !important; padding: 8px 16px !important; }
+.swagger-ui .opblock .opblock-summary-path { color: #e0e0e8 !important; font-family: 'JetBrains Mono', monospace !important; }
+.swagger-ui .opblock .opblock-summary-description { color: #8b8b9e !important; }
+.swagger-ui .opblock-body { background: #0e0e16 !important; }
+.swagger-ui .opblock-description-wrapper p { color: #a0a0b8 !important; }
+.swagger-ui table thead tr th, .swagger-ui table thead tr td { color: #8b8b9e !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; }
+.swagger-ui table tbody tr td { color: #e0e0e8 !important; border-bottom: 1px solid rgba(255,255,255,0.04) !important; }
+.swagger-ui .parameter__name { color: #06b6d4 !important; font-family: 'JetBrains Mono', monospace !important; }
+.swagger-ui .parameter__type { color: #8b8b9e !important; }
+.swagger-ui .parameter__in { color: #6366f1 !important; }
+.swagger-ui select { background: #1e1e2e !important; color: #e0e0e8 !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; }
+.swagger-ui input[type=text], .swagger-ui textarea { background: #1e1e2e !important; color: #e0e0e8 !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; }
+.swagger-ui .btn { border-radius: 8px !important; font-weight: 500 !important; }
+.swagger-ui .btn.execute { background: #6366f1 !important; border-color: #6366f1 !important; color: #fff !important; }
+.swagger-ui .btn.execute:hover { background: #5558e6 !important; }
+.swagger-ui .btn.authorize { background: transparent !important; border: 1px solid #6366f1 !important; color: #6366f1 !important; }
+.swagger-ui .model-box { background: #12121a !important; border-radius: 8px !important; }
+.swagger-ui .model { color: #e0e0e8 !important; }
+.swagger-ui .model-title { color: #f0f0f5 !important; font-weight: 600 !important; }
+.swagger-ui .model .property { color: #06b6d4 !important; }
+.swagger-ui section.models { border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 12px !important; background: #12121a !important; }
+.swagger-ui section.models h4 { color: #f0f0f5 !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; }
+.swagger-ui .model-container { background: #0e0e16 !important; border-radius: 8px !important; margin: 8px 0 !important; }
+.swagger-ui .response-col_status { color: #10b981 !important; font-family: 'JetBrains Mono', monospace !important; }
+.swagger-ui .response-col_description { color: #8b8b9e !important; }
+.swagger-ui .responses-wrapper { background: transparent !important; }
+.swagger-ui .highlight-code { background: #0a0a0f !important; border-radius: 8px !important; }
+.swagger-ui .highlight-code pre { color: #e0e0e8 !important; }
+.swagger-ui .copy-to-clipboard { background: #1e1e2e !important; border-radius: 6px !important; }
+.swagger-ui .microlight { background: #0a0a0f !important; color: #e0e0e8 !important; font-family: 'JetBrains Mono', monospace !important; border-radius: 8px !important; }
+.swagger-ui .renderedMarkdown p { color: #a0a0b8 !important; }
+.swagger-ui .response-control-media-type__accept-message { color: #10b981 !important; }
+.swagger-ui .loading-container .loading::after { color: #6366f1 !important; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a4e; }
+"""
+
+REDOC_DARK_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+body { background: #0a0a0f !important; color: #e0e0e8 !important; margin: 0; }
+.redoc-wrap { background: #0a0a0f !important; }
+.menu-content { background: #0e0e16 !important; border-right: 1px solid rgba(255,255,255,0.06) !important; }
+.menu-content label.active { background: rgba(99,102,241,0.12) !important; }
+.menu-content ul li.active { border-left-color: #6366f1 !important; }
+.menu-content label span { color: #e0e0e8 !important; }
+.menu-content label { color: #8b8b9e !important; }
+.menu-content label:hover { background: rgba(255,255,255,0.04) !important; }
+a[href] { color: #6366f1 !important; }
+h1, h2, h3, h4, h5 { color: #f0f0f5 !important; font-family: 'Inter', sans-serif !important; }
+h1 { font-size: 2rem !important; font-weight: 700 !important; }
+p, li, td, span { color: #a0a0b8 !important; }
+code { background: #1e1e2e !important; color: #06b6d4 !important; border-radius: 4px !important; font-family: 'JetBrains Mono', monospace !important; }
+pre { background: #0e0e16 !important; border-radius: 8px !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+pre code { color: #e0e0e8 !important; }
+table { border-color: rgba(255,255,255,0.06) !important; }
+table th { background: #12121a !important; color: #e0e0e8 !important; border-color: rgba(255,255,255,0.06) !important; font-weight: 600 !important; }
+table td { border-color: rgba(255,255,255,0.06) !important; color: #a0a0b8 !important; }
+tr { background: #0a0a0f !important; }
+tr:nth-child(2n) { background: #0e0e16 !important; }
+.api-content { background: #0a0a0f !important; }
+.http-verb { border-radius: 6px !important; font-weight: 600 !important; font-size: 0.75rem !important; padding: 4px 10px !important; }
+.http-verb.post { background: #6366f1 !important; }
+.http-verb.get { background: #10b981 !important; }
+.react-tabs__tab-panel { background: #0e0e16 !important; }
+.react-tabs__tab { color: #8b8b9e !important; background: transparent !important; }
+.react-tabs__tab--selected { color: #f0f0f5 !important; border-bottom-color: #6366f1 !important; }
+.token.property { color: #06b6d4 !important; }
+.token.string { color: #10b981 !important; }
+.token.number { color: #f59e0b !important; }
+.token.boolean { color: #ec4899 !important; }
+.token.punctuation { color: #8b8b9e !important; }
+[role='tabpanel'] > div, [role='tabpanel'] pre { background: #0e0e16 !important; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a4e; }
+"""
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return HTMLResponse(f"""<!DOCTYPE html>
+<html><head>
+<title>{app.title} - Swagger UI</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>{SWAGGER_DARK_CSS}</style>
+</head><body>
+<div id="swagger-ui"></div>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>
+SwaggerUIBundle({{
+    url: '{app.openapi_url}',
+    dom_id: '#swagger-ui',
+    presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+    layout: 'BaseLayout',
+    defaultModelsExpandDepth: -1,
+    docExpansion: 'list',
+    filter: true,
+    tryItOutEnabled: true
+}});
+</script>
+</body></html>""")
+
+@app.get("/redoc", include_in_schema=False)
+async def custom_redoc():
+    return HTMLResponse(f"""<!DOCTYPE html>
+<html><head>
+<title>{app.title} - API Reference</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>{REDOC_DARK_CSS}</style>
+</head><body>
+<redoc spec-url='{app.openapi_url}' 
+    theme='{{"colors":{{"primary":{{"main":"#6366f1"}}}},"typography":{{"fontFamily":"Inter, sans-serif","headings":{{"fontFamily":"Inter, sans-serif"}},"code":{{"fontFamily":"JetBrains Mono, monospace"}}}},"sidebar":{{"backgroundColor":"#0e0e16","textColor":"#8b8b9e","activeTextColor":"#f0f0f5"}},"rightPanel":{{"backgroundColor":"#12121a"}}}}'
+></redoc>
+<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+</body></html>""")
 
 # Concurrency Management: Store unique environment states per session
 sessions: Dict[str, SafeGuardEnv] = {}
