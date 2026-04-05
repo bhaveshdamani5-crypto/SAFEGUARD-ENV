@@ -724,30 +724,33 @@ def root_page():
     }, { threshold: 0.1 });
     reveals.forEach(el => observer.observe(el));
 
-    // View Repository button: try to detect HF Space URL and link to Files tab
+    // Fix all links for HuggingFace Spaces iframe embedding
     (function() {
-        const btn = document.getElementById('view-repo-btn');
-        if (btn) {
-            // On HuggingFace Spaces, window.location will be the space URL
-            // We need to link to the Files tab of the same space
-            const loc = window.location;
-            const hfMatch = loc.hostname.match(/^(.+)\\.hf\\.space$/);
-            if (hfMatch) {
-                // Running on HF Spaces subdomain (e.g. bhavesh657-safeguard-env.hf.space)
-                const parts = hfMatch[1].split('-');
-                const username = parts[0];
-                const spaceName = parts.slice(1).join('-');
-                btn.href = 'https://huggingface.co/spaces/' + username + '/' + spaceName + '/tree/main';
-                btn.target = '_blank';
-            } else if (loc.hostname === 'huggingface.co' || loc.hostname.endsWith('.huggingface.co')) {
-                // Embedded in HF iframe
-                btn.href = loc.pathname.replace(/\\/$/, '') + '/tree/main';
-                btn.target = '_top';
-            } else {
-                // Local development — link to HuggingFace space directly
-                btn.href = 'https://huggingface.co/spaces/bhavesh657/SafeGuard-Env/tree/main';
-                btn.target = '_blank';
-            }
+        const loc = window.location;
+        const baseUrl = loc.origin; // e.g. https://bhavesh657-safeguard-env.hf.space
+        const hfMatch = loc.hostname.match(/^(.+)\\.hf\\.space$/);
+
+        // Determine HF repo URL for "View Repository"
+        let repoUrl = 'https://huggingface.co/spaces/bhavesh657/SafeGuard-Env/tree/main';
+        if (hfMatch) {
+            const parts = hfMatch[1].split('-');
+            const username = parts[0];
+            const spaceName = parts.slice(1).join('-');
+            repoUrl = 'https://huggingface.co/spaces/' + username + '/' + spaceName + '/tree/main';
+        }
+
+        // Fix all links that point to local API paths (/docs, /redoc)
+        // These break inside the HF iframe because target="_top" navigates huggingface.co
+        document.querySelectorAll('a[href="/docs"], a[href="/redoc"]').forEach(function(link) {
+            link.href = baseUrl + link.getAttribute('href');
+            link.target = '_blank';
+        });
+
+        // Fix the View Repository button
+        const repoBtn = document.getElementById('view-repo-btn');
+        if (repoBtn) {
+            repoBtn.href = repoUrl;
+            repoBtn.target = '_blank';
         }
     })();
 </script>
