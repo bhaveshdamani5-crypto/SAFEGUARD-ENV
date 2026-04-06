@@ -1,26 +1,11 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-# Set up a new user named "user" with user ID 1000
-RUN useradd -m -u 1000 user
+WORKDIR /app
 
-# Switch to the "user" user
-USER user
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set home to the user's home directory
-ENV HOME=/home/user \
-    PATH=/home/user/.local/bin:$PATH
+COPY . .
 
-# Set the working directory to the user's app directory
-WORKDIR $HOME/app
-
-# Copy requirements and install them securely
-COPY --chown=user requirements.txt .
-COPY --chown=user pyproject.toml .
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-# Copy the rest of the application
-COPY --chown=user . $HOME/app
-
-EXPOSE 7860
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+EXPOSE 8000
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]

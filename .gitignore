@@ -1,5 +1,10 @@
 __pycache__/
 *.pyc
 .env
+.venv/
+venv/
+.DS_Store
+*.log
+*.sqlite3
 uvicorn_err.txt
 uvicorn_out.txt

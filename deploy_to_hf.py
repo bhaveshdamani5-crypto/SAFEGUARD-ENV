@@ -16,7 +16,7 @@ def deploy():
     user = api.whoami()
     username = user['name']
     
-    space_name = "safeguard-env"
+    space_name = os.environ.get("HF_SPACE_NAME", "SafeGuard-Env")
     repo_id = f"{username}/{space_name}"
     
     try:
