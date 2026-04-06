@@ -1,11 +1,23 @@
-FROM python:3.12-slim
+# Use a lightweight Python base image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY requirements.txt ./
+# Install system dependencies (needed for standard ML libraries)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy source code into the container
 COPY . .
 
-EXPOSE 8000
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Expose the standard port for FastAPI/HuggingFace Spaces
+EXPOSE 7860
+
+# Command to run the application
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]

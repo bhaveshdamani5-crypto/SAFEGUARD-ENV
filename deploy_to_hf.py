@@ -1,51 +1,45 @@
-
 import os
-import sys
 from huggingface_hub import HfApi
 
-def deploy():
+def deploy_to_spaces():
+    # HF token should be set as an environment variable HF_TOKEN, or passed directly below
+    # Make sure you are logged in via `huggingface-cli login` or provide the token.
     token = os.environ.get("HF_TOKEN")
+    
     if not token:
-        print("Please set the HF_TOKEN environment variable.")
+        print("Please enter your Hugging Face Token (starts with 'hf_...').")
         print("You can get one from: https://huggingface.co/settings/tokens")
-        sys.exit(1)
+        token = input("HF Token: ").strip()
 
-    api = HfApi(token=token)
+    print("\nPreparing to deploy to Hugging Face...")
     
-    # Get username from token
-    user = api.whoami()
-    username = user['name']
-    
-    space_name = os.environ.get("HF_SPACE_NAME", "SafeGuard-Env")
-    repo_id = f"{username}/{space_name}"
+    api = HfApi()
+    repo_id = "bhavesh657/SafeGuard-Env"
     
     try:
-        print(f"Checking if Space {repo_id} exists...")
-        api.space_info(repo_id)
-        print("Space exists. Updating...")
-    except Exception as e:
-        print(f"Space doesn't exist. Creating new Space {repo_id}...")
-        api.create_repo(
-            repo_id=repo_id,
-            repo_type="space",
-            space_sdk="docker",
-            private=False
-        )
+        print(f"Uploading files to Space '{repo_id}'...")
         
-    try:
-        print("Uploading folder...")
+        # Upload the entire current folder excluding useless local stuff
         api.upload_folder(
             folder_path=".",
             repo_id=repo_id,
             repo_type="space",
-            delete_patterns="*",
-            ignore_patterns=["__pycache__/*", ".git/*", "deploy_to_hf.py", ".venv/*", ".env"]
+            token=token,
+            ignore_patterns=[
+                ".venv/*", 
+                ".git/*", 
+                "__pycache__/*", 
+                "*.pyc",
+                "docs/*",
+                ".env"
+            ],
+            commit_message="feat: Deploy OpenEnv Gym RL architecture"
         )
-        print(f"Deployment complete! 🎉 Your space will be available at: https://huggingface.co/spaces/{repo_id}")
+        print("\n✅ Deployment Successful!")
+        print(f"Your Hackathon App is now live at: https://huggingface.co/spaces/{repo_id}")
+    
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        print(f"Failed to upload. Error: {e}")
+        print(f"\n❌ Deployment Failed: {e}")
 
 if __name__ == "__main__":
-    deploy()
+    deploy_to_spaces()

@@ -1,152 +1,132 @@
-# SafeGuard Env
+<div align="center">
+    <img src="https://img.shields.io/badge/Meta-OpenInnovation-0668E1?style=for-the-badge&logo=meta&logoColor=white"/>
+    <img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white"/>
+    <img src="https://img.shields.io/badge/Meta_Llama_3-046A38?style=for-the-badge&logo=meta&logoColor=white"/>
+    <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi"/>
+    <h1>🌍 SafeGuard-OpenEnv</h1>
+    <h3>AI-Powered Real-time Environmental Anomaly & Risk Detection System</h3>
+    <p><b>Built specifically for the Meta Open Innovation / OpenEnv Hackathon</b></p>
+</div>
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white)](https://github.com/bhaveshdamani5-crypto/SAFEGUARD-ENV) [![Hugging Face](https://img.shields.io/badge/Hugging_Face-Space-FF6E1F?logo=huggingface&logoColor=white)](https://huggingface.co/spaces/bhavesh657/SafeGuard-Env)
-
-## Secure `.env` management for modern teams
-
-SafeGuard Env prevents dangerous `.env` leaks by encrypting secrets on ingest, enforcing role-based access, and providing safe share tokens for audits and demo-ready workflows.
-
-### Problem
-
-Environment variables are often stored in plain text, accidentally checked into GitHub, or shared insecurely across teams. This creates high-risk leaks for API keys, database credentials, and cloud secrets.
-
-### Solution
-
-A lightweight secure vault that:
-
-- encrypts `.env` secrets with AES-256-GCM,
-- stores only masked previews,
-- tracks secret versions,
-- issues scoped share tokens,
-- and detects GitHub-style leak patterns.
+<p align="center">
+    <em>Deep Learning architecture designed to prevent environmental disasters before they happen, leveraging <b>PyTorch</b> and <b>Meta Llama 3</b> APIs.</em>
+</p>
 
 ---
 
-## How it works
+## 🚨 The OpenEnv Problem
 
-1. Upload a `.env` file or paste variables into the demo UI.
-2. Each secret is encrypted immediately with AES-256-GCM.
-3. Encrypted payloads are stored in-memory with version metadata.
-4. A leak scanner marks suspicious tokens and `.env` exposure risk.
-5. Admin users can create tokens for secure access without revealing plaintext by default.
+Every year, undetected industrial leaks, spontaneous factory fires, and slow-building pollution events result in lost lives, billion-dollar damages, and devastating ecological consequences. 
+
+**Traditional sensor networks are reactive.** They use hardcoded thresholds that trigger alarms *after* critical thresholds are breached. They cannot recognize complex, multi-variate warning signs—such as a slight drop in humidity paired with an unusual spike in CO2—before an event actually happens.
+
+## 💡 The SafeGuard-OpenEnv Solution
+
+**SafeGuard-OpenEnv** transforms reactive sensor monitoring into **proactive anomaly prediction**.
+
+By leveraging state-of-the-art **Deep Learning (PyTorch)** and **Meta Llama 3** for incident reporting, the system continuously models the "normal" operational baseline of an environment across multiple variables (Temperature, Humidity, CO2, PM2.5). When a sub-threshold multivariate deviation occurs, it accurately isolates the anomaly, categorizes the risk, and deploys high-priority Llama-3 enhanced alerts via a comprehensive dashboard.
 
 ---
 
-## Architecture
+## 🧠 Gymnasium Reinforcement Learning (OpenEnv Core)
 
-- `frontend/` — UI concept and future dashboard placeholder
-- `backend/` — FastAPI API for secret ingest, sharing, and scanning
-- `encryption/` — AES-256-GCM cryptography implementation
-- `demo/` — Gradio sample app for Hugging Face Spaces
-- `docs/` — architecture, security, and feature documentation
+In strict adherence to the **Meta PyTorch OpenEnv Hackathon x Scaler** requirements, the core AI intelligence is built around a custom **Reinforcement Learning Gymnasium Environment** (`env/safeguard_env.py`).
+
+1. **Custom OpenEnv Framework:** We simulated a realistic industrial hazard scenario inside a standard Gymnasium API container.
+2. **Observation Space:** The RL Agent constantly perceives 4 continuous telemetry streams `[Temp, Hum, CO2, PM2.5]`.
+3. **Action Space (Mitigation):** The Agent controls facility hardware to prevent disasters:
+   - `0`: Continue Operations (No energy cost)
+   - `1`: Trigger Ventilation (Reduces CO2/PM2.5, incurs energy penalty)
+   - `2`: Trigger Cooling (Reduces Heat, incurs energy penalty)
+   - `3`: Emergency Shutdown (Forces baseline safety, massive production penalty)
+4. **Proximal Policy Optimization (PPO):** We trained the agent using `stable-baselines3` (PyTorch) to learn the precise balance between maintaining environmental safety and over-using expensive mitigation systems.
+5. **Meta Llama 3 Risk Reports:** The agent's selected actions are contextualized via Meta Llama 3 prompts into actionable telemetry reports for human operators via the UI.
+
+---
+
+## 🏗 System Architecture (RL OpenEnv Spec)
+
+The project is built as a complete real-world Hackathon execution.
 
 ```mermaid
 graph TD
-  A[User] -->|Upload .env| B[Demo UI]
-  B -->|POST /upload-env| C[FastAPI Backend]
-  C -->|Encrypt| D[AES-256-GCM Engine]
-  C -->|Store| E[Secret Version Store]
-  C -->|Scan| F[Leak Detection]
-  C -->|Issue| G[Share Token]
-  G -->|Access| A
+    S[(Sensor Telemetry Stream\nTemp, Hum, CO2, PM2.5)] -->|Observation| A[FastAPI Ingestion Layer]
+    A -->|Observation State| B[Trained Gym RL Agent]
+    B -->|PPO Inference| B
+    B -->|Mitigation Action (0,1,2,3)| D[RL Control Logic]
+    D -->|Context| L[Meta Llama 3 Auto-Report API]
+    L -->|JSON Stream| E[Real-time Client Dashboard]
+    D -->|Sensors Only| E
+    
+    style S fill:#1f2937,stroke:#94a3b8,color:#f0f4f8
+    style A fill:#0ea5e9,stroke:#0284c7,color:#f0f4f8
+    style B fill:#ee4c2c,stroke:#b91c1c,color:#f0f4f8
+    style L fill:#046A38,stroke:#024A26,color:#f0f4f8
+    style E fill:#10b981,stroke:#047857,color:#f0f4f8
 ```
 
----
-
-## Features
-
-- AES-256-GCM secret encryption
-- Secure `.env` ingestion and parsing
-- Secret versioning and audit metadata
-- Role-based access: `admin`, `editor`, `viewer`
-- Token-based secure sharing
-- Basic GitHub leak detection patterns
-- Risk scoring: `low`, `medium`, `high`
-- Masked secret preview UI
-- Demo-ready Hugging Face Space
+- **Frontend:** Premium responsive Glassmorphism dashboard leveraging Vanilla JS and Chart.js for real-time risk streaming.
+- **Backend:** High-performance asynchronous FastAPI server handling data routing.
+- **ML Layer:** PyTorch training harness (`ml/train.py`), synthetic dataset generator (`ml/dataset.py`), and TorchScript inference.
 
 ---
 
-## Tech stack
+## 📊 Innovation Boosts
 
-- Python 3.10+
-- FastAPI
-- Gradio
-- cryptography
-- Pydantic
-- Hugging Face
+1. **Edge-AI Compatibility:** Exported TorchScript graph execution allows deployment directly on ARM/Edge IoT devices without standard Python dependencies.
+2. **Multi-variate Sensoring:** Analyzes up to 4 real-time data streams concurrently compared to simple single-variable triggers.
+3. **Zero-shot Anomaly Detection:** Requires only "normal" data for training, solving the primary challenge of gathering data for catastrophic factory/forest events that rarely happen.
 
 ---
 
-## Screenshots
+## 🌍 Real-World Impact (OpenEnv)
 
-![Upload Preview](./docs/screenshots/upload-preview.png)
-
-![Risk Score Dashboard](./docs/screenshots/risk-dashboard.png)
-
-> Screenshot placeholders — replace with actual UI captures after frontend polish.
+- **Industrial Safety:** Protects workers by identifying volatile chemical buildup or combustion precursors.
+- **Urban Sustainability:** Enables smart cities to instantly detect unauthorized industrial emissions or smog pockets.
+- **Ecological Preservation:** Monitors forest borders for immediate wildfire detection by recognizing pre-ignition atmospheric anomalies.
 
 ---
 
-## Demo
+## 🚀 Deployment Guide
 
-### Local demo
+### Local Deployment (Development)
+
+Run the full product stack locally with Python's fast ASGI server.
 
 ```bash
+# 1. Create virtual environment
 python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# macOS/Linux
-source .venv/bin/activate
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+
+# 2. Install dependencies
 pip install -r requirements.txt
-python app.py
+
+# 3. Train the PyTorch model (Generates TorchScript .pt)
+python -m ml.train
+
+# 4. Start the Application Stack
+uvicorn app:app --host 0.0.0.0 --port 7860
 ```
+Then visit: `http://localhost:7860`
 
-Visit `http://localhost:7860`
-
-### Hugging Face Spaces
-
-Set `HF_TOKEN` and deploy:
+### 📦 Docker / Cloud Native
 
 ```bash
-set HF_TOKEN=hf_...
-set HF_SPACE_NAME=SafeGuard-Env
-python deploy_to_hf.py
+# Build the production image
+docker build -t safeguard-env .
+
+# Run the containerized service
+docker run -p 7860:7860 safeguard-env
 ```
 
----
+### Hugging Face Spaces Deployment
 
-## Why this is better than Vault, dotenv, or plain files
-
-- **Vault** is powerful but heavy for demo-style delivery. SafeGuard Env is lightweight, easy to run, and built for rapid secure proof-of-concept.
-- **dotenv** stores secrets in plain text. SafeGuard Env encrypts them immediately and only exposes masked previews.
-- **Plain files** have no access controls. This project adds roles, token sharing, versioning, and leak alerting.
+The repository is built organically for Hugging Face Spaces. Simply create a Space configured to `Docker` or `Gradio/FastAPI` and push the repository!
 
 ---
 
-## Future scope
+## 🔮 Future Scope
 
-- Persist encrypted secrets in a secure database
-- Add multi-user authentication and audit logs
-- Build a full React/Vue dashboard
-- Add SCM/webhook leak scanning
-- Support ephemeral CI/CD secret injection
-
----
-
-## Contribution
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a pull request with tests and docs updates.
-4. Use the `docs/` folder for architecture and security notes.
-
----
-
-## Quick start
-
-```bash
-uvicorn backend.api:app --host 0.0.0.0 --port 8000
-```
-
-Then use the demo or API endpoints to upload and inspect secrets.
+- **Federated Learning:** Train edge nodes locally and aggregate their weights in the cloud, allowing different factories to learn from each other's disaster data privately.
+- **Satellite Data Fusion:** Incorporate open computer vision API models (Sentinel-2) to cross-verify terrestrial sensor anomalies with aerial visual data.
+- **Automated Mitigation:** Connect with smart factory systems to automatically trigger ventilation or lock down affected pipeline sectors upon critical risk.
